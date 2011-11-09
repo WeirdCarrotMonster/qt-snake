@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/images">
-        <file>fruit.png</file>
         <file>head.png</file>
         <file>logo.ico</file>
+        <file>fruit.png</file>
     </qresource>
 </RCC>

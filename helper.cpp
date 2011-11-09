@@ -120,7 +120,7 @@ void Helper::paint(QPainter *painter, QPaintEvent *event, int elapsed)
         if (sqrt(pow((body[1].x - fruit.x()),2) + pow((body[1].y - fruit.y()),2)) < 20)
         {
             //Жрем фрукт, все дела
-            body[1].radius += 5;
+            body[1].radius += 10;
             points += sqrt(pow((300 - fruit.x()),2) + pow((300 - fruit.y()),2));
             screen->setScore(points);
             //Спавним новый
@@ -129,7 +129,7 @@ void Helper::paint(QPainter *painter, QPaintEvent *event, int elapsed)
 
         for (int i = count; i>1; i--)
         {
-            if (i == count && body[i].radius > 20)
+            if (i == count && body[i].radius == 30)
             {
                 count++;
                 body[count].x = body[i].x;
@@ -138,7 +138,19 @@ void Helper::paint(QPainter *painter, QPaintEvent *event, int elapsed)
             }
             body[i].x = body[i-1].x;
             body[i].y = body[i-1].y;
-            body[i].radius = body[i-1].radius;
+            if (body[i-1].radius == 30)
+                body[i].radius = 30;
+            else
+                body[i].radius = 20;
+        }
+
+        for (int i = 2; i<count; i++)
+        {
+            if (body[i].radius == 30)
+            {
+                body[i-1].radius = 25;
+                body[i+1].radius = 25;
+            }
         }
 
         body[1].radius = 20;
@@ -185,11 +197,13 @@ void Helper::spawnFruit()
 
 void Helper::draw(QPainter *painter)
 {
-    painter->setBrush(circleBrush);
     painter->setPen(circlePen);
     for (int i=count; i> 1; i--)
+    {
+        painter->setBrush(QBrush(QColor(39 + (body[i].radius - 20)*10, 135, 63)));
         painter->drawEllipse(body[i].x - body[i].radius/2, body[i].y - body[i].radius/2,
                              body[i].radius, body[i].radius);
+    }
 
     //и тут внезапно ГОЛОВА такая
     QTransform myTransform;
