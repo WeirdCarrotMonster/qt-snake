@@ -17,6 +17,10 @@ Helper::Helper(Widget *w, scoreScreen *s)
     dead = false;
     widget = w;
 
+    QResource::registerResource("resource.qrc");
+    fruitImage = QImage(":/images/fruit.png");
+    headImage = QImage(":/images/head.png");
+
     background = QBrush(QColor(64, 32, 64));
     circleBrush = QBrush(QColor(0xa6, 0xce, 0x39));
     circlePen = QPen(Qt::black);
@@ -44,8 +48,6 @@ Helper::Helper(Widget *w, scoreScreen *s)
 void Helper::paint(QPainter *painter, QPaintEvent *event, int elapsed)
 {
     painter->fillRect(event->rect(), background);
-    painter->setBrush(circleBrush);
-    painter->setPen(circlePen);
     if (!dead)
     {
         painter->save();
@@ -178,9 +180,21 @@ void Helper::spawnFruit()
 
 void Helper::draw(QPainter *painter)
 {
-    for (int i=count; i>= 1; i--)
+    painter->setBrush(circleBrush);
+    painter->setPen(circlePen);
+    for (int i=count; i> 1; i--)
         painter->drawEllipse(body[i].x - body[i].radius/2, body[i].y - body[i].radius/2,
                              body[i].radius, body[i].radius);
 
-    painter->drawEllipse(fruit.x() - 10, fruit.y() - 10, 20, 20);
+    //и тут внезапно ГОЛОВА такая
+    QTransform myTransform;
+    myTransform.rotate(direction + 90);
+    QImage headTransformed = headImage.transformed(myTransform);
+    int w, h;
+    w = headTransformed.width();
+    h = headTransformed.height();
+    headTransformed = headTransformed.copy( (w/2 - 10), (h/2 - 10), 20, 20);
+    painter->drawImage(body[1].x - 10, body[1].y - 10, headTransformed);
+
+    painter->drawImage(fruit.x() - 10, fruit.y() - 10, fruitImage);
 }

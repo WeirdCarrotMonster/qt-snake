@@ -13,5 +13,5 @@ SOURCES     = \
     scorescreen.cpp
 TARGET      = qt-snake
 
-
-
+RESOURCES += \
+    resources.qrc

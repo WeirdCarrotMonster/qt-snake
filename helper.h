@@ -43,6 +43,8 @@ private:
     Widget *widget;
     QBrush background;
     QBrush circleBrush;
+    QImage fruitImage;
+    QImage headImage;
     QFont textFont;
     QPen circlePen;
     QPen textPen;
