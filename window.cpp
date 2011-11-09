@@ -1,5 +1,4 @@
 #include <QtGui>
-#include "glwidget.h"
 #include "widget.h"
 #include "window.h"
 #include "QCursor"
