@@ -10,7 +10,6 @@ class QLabel;
 class QWidget;
 QT_END_NAMESPACE
 
-//! [0]
 class Window : public QWidget
 {
     Q_OBJECT
@@ -28,6 +27,5 @@ private:
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
 };
-//! [0]
 
 #endif
