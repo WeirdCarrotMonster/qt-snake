@@ -2,5 +2,6 @@
     <qresource prefix="/images">
         <file>fruit.png</file>
         <file>head.png</file>
+        <file>logo.ico</file>
     </qresource>
 </RCC>

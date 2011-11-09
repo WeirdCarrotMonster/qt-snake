@@ -25,7 +25,10 @@ Window::Window()
     timer->start(30);
     this->setFixedSize(720, 620);
 
-    setWindowTitle(tr("Snake"));
+    QResource::registerResource("resource.qrc");
+    this->setWindowTitle(tr("Snake"));
+    QIcon icon = QIcon(":/images/logo.ico");
+    this->setWindowIcon(icon);
 }
 
 void Window::mouseMoveEvent(QMouseEvent *event)
