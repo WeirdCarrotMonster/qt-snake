@@ -25,7 +25,7 @@ Window::Window()
     timer->start(30);
     this->setFixedSize(720, 620);
 
-    setWindowTitle(tr("2D Painting on Native and OpenGL Widgets"));
+    setWindowTitle(tr("Snake"));
 }
 
 void Window::mouseMoveEvent(QMouseEvent *event)

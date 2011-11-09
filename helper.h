@@ -6,8 +6,8 @@
 #include <QPen>
 #include <QCursor>
 #include <QResource>
-#include <widget.h>
-#include <scorescreen.h>
+#include "widget.h"
+#include "scorescreen.h"
 
 QT_BEGIN_NAMESPACE
 class QPainter;
