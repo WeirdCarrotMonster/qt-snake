@@ -11,6 +11,7 @@ Window::Window()
     scoreScreen *screen = new scoreScreen;
     cursor = new QCursor;
     helper = new Helper(native, screen);
+    helper->toggleRunning();
     native = new Widget(helper, this);
 
     QHBoxLayout *layout = new QHBoxLayout;
@@ -24,15 +25,15 @@ Window::Window()
     connect(timer, SIGNAL(timeout()), native, SLOT(animate()));
     timer->start(30);
     this->setFixedSize(720, 620);
-
-    QResource::registerResource("resource.qrc");
-    this->setWindowTitle(tr("Snake"));
-    QIcon icon = QIcon(":/images/logo.ico");
-    this->setWindowIcon(icon);
 }
 
 void Window::mouseMoveEvent(QMouseEvent *event)
 {
     helper->x = native->mapFromGlobal(cursor->pos()).x();
     helper->y = native->mapFromGlobal(cursor->pos()).y();
+}
+
+void Window::mousePressEvent(QMouseEvent *event)
+{
+    helper->toggleRunning();
 }

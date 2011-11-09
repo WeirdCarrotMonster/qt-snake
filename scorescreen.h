@@ -12,6 +12,7 @@ public:
     explicit scoreScreen(QWidget *parent = 0);
     void setScore(int s);
     void addAchievement(QString s);
+    void clear();
 
 signals:
 

@@ -29,6 +29,7 @@ class Helper
 {
 public:
     Helper(Widget *w, scoreScreen *s);
+    void toggleRunning();
     int x;
     int y;
 
@@ -38,6 +39,7 @@ public:
 private:
     void spawnFruit();
     void draw(QPainter *painter);
+    void spawnSnake();
     int points;
     scoreScreen *screen;
     Widget *widget;
@@ -51,6 +53,7 @@ private:
     int count;
     int direction;
     bool dead;
+    bool running;
     cell *head;
     cell body[1000];
     QPoint fruit;

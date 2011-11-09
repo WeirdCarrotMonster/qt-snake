@@ -11,10 +11,10 @@
 Helper::Helper(Widget *w, scoreScreen *s)
 {
     screen = s;
-    points = 0;
     QTime time = QTime::currentTime();
     qsrand((uint)time.msec());
     dead = false;
+    running = true;
     widget = w;
 
     QResource::registerResource("resource.qrc");
@@ -30,7 +30,12 @@ Helper::Helper(Widget *w, scoreScreen *s)
     count = 1;
     x = 200;
     y = 200;
+    spawnSnake();
+}
 
+void Helper::spawnSnake()
+{
+    points = 0;
     count = 0;
     for (int i = 1; i< 20; i++)
     {
@@ -48,7 +53,7 @@ Helper::Helper(Widget *w, scoreScreen *s)
 void Helper::paint(QPainter *painter, QPaintEvent *event, int elapsed)
 {
     painter->fillRect(event->rect(), background);
-    if (!dead)
+    if (!dead && running)
     {
         painter->save();
         qreal k = tan(direction * M_PI/180);
@@ -197,4 +202,16 @@ void Helper::draw(QPainter *painter)
     painter->drawImage(body[1].x - 10, body[1].y - 10, headTransformed);
 
     painter->drawImage(fruit.x() - 10, fruit.y() - 10, fruitImage);
+}
+
+void Helper::toggleRunning()
+{
+    running = !running;
+    if (dead)
+    {
+        spawnSnake();
+        screen->clear();
+        dead = false;
+        running = false;
+    }
 }

@@ -23,3 +23,9 @@ void scoreScreen::addAchievement(QString s)
     if (list->findItems(s, Qt::MatchExactly).empty())
         list->addItem(s);
 }
+
+void scoreScreen::clear()
+{
+    score->setText(QString::number(0));
+    list->clear();
+}
