@@ -3,5 +3,6 @@
         <file>head.png</file>
         <file>logo.ico</file>
         <file>fruit.png</file>
+        <file>bonus.png</file>
     </qresource>
 </RCC>

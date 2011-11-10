@@ -10,18 +10,19 @@ class scoreScreen : public QWidget
     Q_OBJECT
 public:
     explicit scoreScreen(QWidget *parent = 0);
-    void setScore(int s);
+    void increaseScore(int s);
     void addAchievement(QString s);
+    void addMultiplier();
     void clear();
-
-signals:
-
-public slots:
+    void pass(int elapsed);
 
 private:
-    QLabel *score;
+    QLabel *scoreLabel;
+    QLabel *multiplyLabel;
+    QLabel *multiplyTimeLabel;
     QListWidget *list;
-
+    int score, multiply;
+    int multiplyTime;
 };
 
 #endif // SCORESCREEN_H

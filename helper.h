@@ -34,29 +34,30 @@ public:
     int y;
 
 public:
-    void paint(QPainter *painter, QPaintEvent *event, int elapsed);
+    void animate(QPainter *painter, QPaintEvent *event, int elapsed);
 
 private:
-    void spawnFruit();
     void draw(QPainter *painter);
+    void spawnFruit();
     void spawnSnake();
-    int points;
+    void checkBonus();
+    bool eatFruit();
+    bool eatBonus();
     scoreScreen *screen;
     Widget *widget;
     QBrush background;
     QBrush circleBrush;
     QImage fruitImage;
+    QImage bonusImage;
     QImage headImage;
     QFont textFont;
     QPen circlePen;
     QPen textPen;
-    int count;
-    int direction;
-    bool dead;
-    bool running;
+    int count, direction, bonusTime, bonusDelay;
+    bool dead, running, bonusState;
     cell *head;
     cell body[1000];
-    QPoint fruit;
+    QPoint fruit, bonus;
 };
 
 #endif

@@ -8,7 +8,7 @@
 Window::Window()
     : QWidget()
 {
-    scoreScreen *screen = new scoreScreen;
+    screen = new scoreScreen;
     cursor = new QCursor;
     helper = new Helper(native, screen);
     helper->toggleRunning();
@@ -24,7 +24,7 @@ Window::Window()
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), native, SLOT(animate()));
     timer->start(30);
-    this->setFixedSize(720, 620);
+    this->setFixedSize(820, 620);
 }
 
 void Window::mouseMoveEvent(QMouseEvent *event)

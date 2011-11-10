@@ -22,6 +22,7 @@ private:
     Helper *helper;
     Widget *native;
     QCursor *cursor;
+    scoreScreen *screen;
     void asd();
 
 protected:
