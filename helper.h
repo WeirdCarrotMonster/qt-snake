@@ -29,7 +29,7 @@ struct animation_t
 {
     QString type;
     int state;
-    int value;
+    QString value;
     int x;
     int y;
 

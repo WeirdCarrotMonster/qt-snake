@@ -15,6 +15,7 @@ public:
     void addMultiplier();
     void clear();
     void pass(int elapsed);
+    int currentMultiplier();
 
 private:
     QLabel *scoreLabel;

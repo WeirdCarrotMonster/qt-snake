@@ -195,7 +195,9 @@ bool Helper::eatFruit()
         animation a;
         a.x = fruit.x();
         a.y = fruit.y();
-        a.value = s;
+        a.value += QString::number(s);
+        a.value += QString("x");
+        a.value += QString::number(screen->currentMultiplier());
         a.state = 0;
         a.type = "SCORE";
         animationList.append(a);
@@ -326,14 +328,11 @@ void Helper::draw(QPainter *painter)
                 a = bonusList.takeLast();
             int startAngle = 90;
             int endAngle = 360*a.bonusTime/a.bonusMaxTime;
-            painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, bonusImage);
+            if (a.type == "MULTIPLIER")
+                painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, bonusImage);
             painter->drawArc(a.coords.x()  -10, a.coords.y() - 10,22, 22, 16*startAngle, 16*endAngle);
-
-            if (a.bonusTime > 0)
-            {
-                bonusList.insert(i, a);
-                i++;
-            }
+            bonusList.insert(i, a);
+            i++;
         }
     }
 
@@ -342,23 +341,24 @@ void Helper::draw(QPainter *painter)
     {
         animation a;
         int i = 0;
-        while (i <= animationList.count() && !animationList.empty())
+        while (i < animationList.count() && !animationList.empty())
         {
+            //Вытаскиваем анимацию из списка
             if (i < animationList.count())
                 a = animationList.takeAt(i);
             else if (i == animationList.count())
                 a = animationList.takeLast();
-            //Разбор типов анимаций
             if (running && !dead)
                 a.state += 2;
+
+            //Разбор типов анимаций
             if (a.type == "SCORE")
             {
                 //Тут отрисовка надписи
                 painter->setPen(textPen);
                 painter->setBrush(Qt::NoBrush);
-                painter->drawText(a.x + a.state/6 - 10, a.y - a.state/3 - 20, QString::number(a.value));
+                painter->drawText(a.x + a.state/6 - 10, a.y - a.state/3 - 20, a.value);
             }
-
             else if (a.type == "SPAWN")
             {
                 //Круг яблока
@@ -369,6 +369,8 @@ void Helper::draw(QPainter *painter)
                 painter->setBrush(Qt::NoBrush);
                 painter->drawEllipse(a.x - radius/2, a.y - radius/2, radius, radius);
             }
+
+            //Кладем анимацию обратно
             if (a.state < 60)
             {
                 animationList.insert(i, a);

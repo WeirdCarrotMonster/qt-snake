@@ -77,3 +77,8 @@ void scoreScreen::pass(int elapsed)
     }
     multiplyTimeLabel->setText(QString::number(multiplyTime/10));
 }
+
+int scoreScreen::currentMultiplier()
+{
+    return multiply;
+}
