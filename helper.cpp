@@ -274,13 +274,11 @@ void Helper::checkBonus()
     {
         bonus b;
         int variant = (qrand() % ((10 + 1) - 1) + 1);
-        //if (variant >= 1 && variant < 9)
-        //    b.type = "MULTIPLIER";
-        //else if (variant == 9)
-        if (variant > 5)
+        if (variant >= 1 && variant < 9)
+            b.type = "MULTIPLIER";
+        else if (variant == 9)
             b.type = "GATHERER";
-        //else if (variant == 10)
-        else
+        else if (variant == 10)
             b.type = "GHOST";
         b.bonusMaxTime = (qrand() % ((100 + 1) - 10) + 10)*10000;
         b.bonusTime = b.bonusMaxTime;
