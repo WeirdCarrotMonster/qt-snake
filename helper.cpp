@@ -35,8 +35,7 @@ void Helper::spawnSnake()
 {
     dead = false;
     running = true;
-    bonusState = false;
-    bonusDelay = (qrand() % ((1000 + 1) - 10) + 10) * 10;
+    bonusList.clear();
     x = 200;
     y = 200;
     count = 0;
@@ -153,7 +152,7 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
 
         body[1].fruit = false;
         //Проверка не сдохли ли мы нахуй
-        for (int i = count; i > 10; i -= 2)
+        for (int i = count; i > 33; i -= 2)
         {
             if (pow((body[1].x - body[i].x),2) + pow((body[1].y - body[i].y),2) < 400)
             {
@@ -209,15 +208,29 @@ bool Helper::eatFruit()
 
 bool Helper::eatBonus()
 {
-    if (bonusState && pow((body[1].x - bonus.x()),2) + pow((body[1].y - bonus.y()),2) < 400)
+    if (!bonusList.empty())
     {
-        bonusState = false;
-        bonusDelay = (qrand() % ((50 + 1) - 10) + 10) * 100;
-        screen->addMultiplier();
-        return true;
+        bonus a;
+        int i = 0;
+        while (i <= bonusList.count() && !bonusList.empty())
+        {
+            if (i < bonusList.count())
+                a = bonusList.takeAt(i);
+            else if (i == bonusList.count())
+                a = bonusList.takeLast();
+            if (pow((body[1].x - a.coords.x()),2) + pow((body[1].y - a.coords.y()),2) > 400)
+            {
+                bonusList.insert(i, a);
+                i++;
+            }
+            else
+            {
+                screen->addMultiplier();
+                return true;
+            }
+        }
     }
-    else
-        return false;
+    return false;
 }
 
 void Helper::spawnFruit()
@@ -234,26 +247,36 @@ void Helper::spawnFruit()
 
 void Helper::checkBonus()
 {
-    if (!bonusState)
+    if (!bonusList.empty())
     {
-        bonusDelay -= 50;
-        if (bonusDelay <= 0)
+        bonus a;
+        int i = 0;
+        while (i <= bonusList.count() && !bonusList.empty())
         {
-            bonusState = true;
-            bonus.setX(qrand() % ((590 + 1) - 10) + 10);
-            bonus.setY(qrand() % ((590 + 1) - 10) + 10);
-            bonusMaxTime = (qrand() % ((100 + 1) - 10) + 10)*100;
-            bonusTime = bonusMaxTime;
+            if (i < bonusList.count())
+                a = bonusList.takeAt(i);
+            else if (i == bonusList.count())
+                a = bonusList.takeLast();
+
+            a.bonusTime -= 3000;
+            if (a.bonusTime > 0)
+            {
+                bonusList.insert(i, a);
+                i++;
+            }
         }
     }
-    else
+    bonusDelay -= 30;
+    if (bonusDelay <= 0)
     {
-        bonusTime -= 50;
-        if (bonusTime <= 0)
-        {
-            bonusState = false;
-            bonusDelay = ((qrand() % ((50 + 1) - 10) + 10) * 10)*100;
-        }
+        bonus b;
+        b.type = "MULTIPLIER";
+        b.bonusMaxTime = (qrand() % ((100 + 1) - 10) + 10)*10000;
+        b.bonusTime = b.bonusMaxTime;
+        b.coords.setX(qrand() % ((590 + 1) - 10) + 10);
+        b.coords.setY(qrand() % ((590 + 1) - 10) + 10);
+        bonusList.append(b);
+        bonusDelay = ((qrand() % ((50 + 1) - 10) + 10) * 10)*10;
     }
 }
 
@@ -288,14 +311,30 @@ void Helper::draw(QPainter *painter)
 
     painter->drawImage(fruit.x() - 10, fruit.y() - 10, fruitImage);
     //Тут будет порядочная отрисовка бонусов. Когда-нибудь потом
-    painter->setPen(bonusPen);
-    if (bonusState)
+    //А вот и она. Или типо она
+
+    if (!bonusList.empty())
     {
-        //Ебаная магия. Если иногда будет пропадать индикатор, копать сюда
-        int startAngle = 90;
-        int endAngle = 360*bonusTime/bonusMaxTime;
-        painter->drawImage(bonus.x() - 10, bonus.y() - 10, bonusImage);
-        painter->drawArc(bonus.x()  -10, bonus.y() - 10,22, 22, 16*startAngle, 16*endAngle);
+        painter->setPen(bonusPen);
+        bonus a;
+        int i = 0;
+        while (i <= bonusList.count() && !bonusList.empty())
+        {
+            if (i < bonusList.count())
+                a = bonusList.takeAt(i);
+            else if (i == bonusList.count())
+                a = bonusList.takeLast();
+            int startAngle = 90;
+            int endAngle = 360*a.bonusTime/a.bonusMaxTime;
+            painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, bonusImage);
+            painter->drawArc(a.coords.x()  -10, a.coords.y() - 10,22, 22, 16*startAngle, 16*endAngle);
+
+            if (a.bonusTime > 0)
+            {
+                bonusList.insert(i, a);
+                i++;
+            }
+        }
     }
 
     //Отрисовка всплывающих сообщений с очками

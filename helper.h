@@ -36,6 +36,14 @@ struct animation_t
 };
 typedef struct animation_t animation;
 
+struct bonus_t
+{
+    QString type;
+    QPoint coords;
+    int bonusTime, bonusMaxTime;
+};
+typedef struct bonus_t bonus;
+
 class Helper
 {
 public:
@@ -69,9 +77,10 @@ private:
     int count, direction, bonusTime, bonusDelay, bonusMaxTime;
     bool dead, running, bonusState;
     QList<animation> animationList;
+    QList<bonus> bonusList;
     cell *head;
     cell body[1000];
-    QPoint fruit, bonus;
+    QPoint fruit;
 };
 
 #endif
