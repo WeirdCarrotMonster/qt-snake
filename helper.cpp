@@ -284,6 +284,12 @@ void Helper::checkBonus()
         b.bonusTime = b.bonusMaxTime;
         b.coords.setX(qrand() % ((590 + 1) - 10) + 10);
         b.coords.setY(qrand() % ((590 + 1) - 10) + 10);
+        animation a;
+        a.x = b.coords.x();
+        a.y = b.coords.y();
+        a.state = 0;
+        a.type = "SPAWN";
+        animationList.append(a);
         bonusList.append(b);
         bonusDelay = ((qrand() % ((50 + 1) - 10) + 10) * 10)*10;
     }
