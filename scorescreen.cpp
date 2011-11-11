@@ -1,6 +1,5 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <iostream>
 #include "scorescreen.h"
 
 scoreScreen::scoreScreen(QWidget *parent) :
@@ -55,7 +54,7 @@ void scoreScreen::addBonus(QString name)
     {
         bonus2 a;
         int i = 0;
-        while (i <= bonusList.count() && !bonusList.empty() && !found)
+        while (!found && i < bonusList.count() && !bonusList.empty())
         {
             if (i < bonusList.count())
                 a = bonusList.takeAt(i);
@@ -82,25 +81,13 @@ void scoreScreen::addBonus(QString name)
 
 bool scoreScreen::haveBonus(QString name)
 {
-    bool found = false;
-    if (!bonusList.empty())
+    foreach (const bonus2 &value, bonusList)
     {
-        bonus2 a;
-        int i = 1;
-        while (i <= bonusList.count() && !bonusList.empty() && !found)
-        {
-            if (i < bonusList.count())
-                a = bonusList.takeAt(i);
-            else if (i == bonusList.count())
-                a = bonusList.takeLast();
-
-            if (a.name == name)
-                found = true;
-            bonusList.insert(i, a);
-            i++;
-        }
+        if (value.name == name)
+            return true;
     }
-    return found;
+
+    return false;
 }
 
 void scoreScreen::clear()
@@ -140,10 +127,10 @@ void scoreScreen::pass(int elapsed)
     if (!bonusList.empty())
     {
         bonus2 a;
-        int i = 1;
-        while (i <= bonusList.count() && !bonusList.empty())
+        int i = 0;
+        while (i < bonusList.size() && !bonusList.empty())
         {
-            if (i < bonusList.count())
+            if (i < bonusList.size())
                 a = bonusList.takeAt(i);
             else if (i == bonusList.count())
                 a = bonusList.takeLast();
@@ -159,6 +146,7 @@ void scoreScreen::pass(int elapsed)
                 bonusList.insert(i, a);
                 i++;
             }
+
         }
     }
 }
