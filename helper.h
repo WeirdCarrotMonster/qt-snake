@@ -44,6 +44,13 @@ struct bonus_t
 };
 typedef struct bonus_t bonus;
 
+struct fruit_t
+{
+    QString type;
+    QPoint coords;
+};
+typedef struct fruit_t fruit;
+
 class Helper
 {
 public:
@@ -57,9 +64,9 @@ public:
 
 private:
     void draw(QPainter *painter);
-    void spawnFruit();
     void spawnSnake();
     void checkBonus();
+    void checkFruit();
     bool eatFruit();
     bool eatBonus();
     scoreScreen *screen;
@@ -75,14 +82,14 @@ private:
     QPen textPen;
     QPen bonusPen;
     QPen spawnPen;
-    int count, direction, bonusDelay;
+    int count, direction, bonusDelay, fruitDelay;
     int additionalSleep;
     bool dead, running, bonusState;
     QList<animation> animationList;
     QList<bonus> bonusList;
+    QList<fruit> fruitList;
     cell *head;
     cell body[1000];
-    QPoint fruit;
 };
 
 #endif

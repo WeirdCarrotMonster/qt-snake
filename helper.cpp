@@ -37,6 +37,7 @@ void Helper::spawnSnake()
     running = true;
     bonusList.clear();
     animationList.clear();
+    fruitDelay = 0;
     x = 200;
     y = 200;
     count = 0;
@@ -51,7 +52,7 @@ void Helper::spawnSnake()
 
     direction = -90;
     //90 это вниз. до 180 включительно
-    this->spawnFruit();
+    this->checkFruit();
 }
 
 void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
@@ -179,6 +180,7 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
         draw(painter);
         painter->restore();
     }
+    this->checkFruit();
 }
 
 bool Helper::eatFruit()
@@ -186,24 +188,41 @@ bool Helper::eatFruit()
     int bonusRange = 0;
     if (screen->haveBonus("GATHERER"))
         bonusRange = 60;
-    if (pow((body[1].x - fruit.x()),2) + pow((body[1].y - fruit.y()),2) < 400 + bonusRange*bonusRange)
+
+    if (!fruitList.empty())
     {
-        int s = sqrt(pow((300 - fruit.x()),2) + pow((300 - fruit.y()),2));
-        screen->increaseScore(s);
-        animation a;
-        a.x = fruit.x();
-        a.y = fruit.y();
-        a.value += QString::number(s);
-        a.value += QString("x");
-        a.value += QString::number(screen->currentMultiplier());
-        a.state = 0;
-        a.type = "SCORE";
-        animationList.append(a);
-        this->spawnFruit();
-        return true;
+        fruit a;
+        int i = 0;
+        while (i <= fruitList.count() && !fruitList.empty())
+        {
+            if (i < fruitList.count())
+                a = fruitList.takeAt(i);
+            else if (i == fruitList.count())
+                a = fruitList.takeLast();
+            if (pow((body[1].x - a.coords.x()),2) + pow((body[1].y - a.coords.y()),2) > 400 + bonusRange)
+            {
+                fruitList.insert(i, a);
+                i++;
+            }
+            else
+            {
+                int s = sqrt(pow((300 - a.coords.x()),2) + pow((300 - a.coords.y()),2));
+                screen->increaseScore(s);
+                animation b;
+                b.x = a.coords.x();
+                b.y = a.coords.y();
+                b.value += QString::number(s);
+                b.value += QString("x");
+                b.value += QString::number(screen->currentMultiplier());
+                b.state = 0;
+                b.type = "SCORE";
+                animationList.append(b);
+                this->checkFruit();
+                return true;
+            }
+        }
     }
-    else
-        return false;
+    return false;
 }
 
 bool Helper::eatBonus()
@@ -234,18 +253,6 @@ bool Helper::eatBonus()
         }
     }
     return false;
-}
-
-void Helper::spawnFruit()
-{
-    fruit.setX(qrand() % ((590 + 1) - 10) + 10);
-    fruit.setY(qrand() % ((590 + 1) - 10) + 10);
-    animation b;
-    b.x = fruit.x();
-    b.y = fruit.y();
-    b.state = 0;
-    b.type = "SPAWN";
-    animationList.append(b);
 }
 
 void Helper::checkBonus()
@@ -295,6 +302,26 @@ void Helper::checkBonus()
     }
 }
 
+void Helper::checkFruit()
+{
+    fruitDelay -= 30;
+    if ( (fruitDelay <= 0 || fruitList.empty()) && fruitList.size() <= 10)
+    {
+        fruit b;
+        b.type = (qrand() % ((10 + 1) - 1) + 1);
+        b.coords.setX(qrand() % ((590 + 1) - 10) + 10);
+        b.coords.setY(qrand() % ((590 + 1) - 10) + 10);
+        animation a;
+        a.x = b.coords.x();
+        a.y = b.coords.y();
+        a.state = 0;
+        a.type = "SPAWN";
+        animationList.append(a);
+        fruitList.append(b);
+        fruitDelay = ((qrand() % ((50 + 1) - 10) + 10) * 10)*10;
+    }
+}
+
 void Helper::draw(QPainter *painter)
 {
     int transparency = 255;
@@ -334,7 +361,22 @@ void Helper::draw(QPainter *painter)
         painter->setBrush(Qt::NoBrush);
         painter->drawEllipse(body[1].x - 39, body[1].y - 39, 78, 78);
     }
-    painter->drawImage(fruit.x() - 10, fruit.y() - 10, fruitImage);
+
+    if (!fruitList.empty())
+    {
+        fruit a;
+        int i = 0;
+        while (i <= fruitList.count() && !fruitList.empty())
+        {
+            if (i < fruitList.count())
+                a = fruitList.takeAt(i);
+            else if (i == fruitList.count())
+                a = fruitList.takeLast();
+            painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, fruitImage);
+            fruitList.insert(i, a);
+            i++;
+        }
+    }
 
     if (!bonusList.empty())
     {
