@@ -310,7 +310,7 @@ void Helper::draw(QPainter *painter)
             else if (i == animationList.count())
                 a = animationList.takeLast();
             //Разбор типов анимаций
-            if (running)
+            if (running && !dead)
                 a.state += 2;
             if (a.type == "SCORE")
             {
