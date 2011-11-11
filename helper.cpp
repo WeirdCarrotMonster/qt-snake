@@ -24,6 +24,8 @@ Helper::Helper(Widget *w, scoreScreen *s)
     circleBrush = QBrush(QColor(0xa6, 0xce, 0x39));
     circlePen = QPen(Qt::black);
     circlePen.setWidth(1);
+    bonusPen = QPen(Qt::red);
+    bonusPen.setWidth(3);
     textPen = QPen(Qt::white);
     textFont.setPixelSize(50);
     this->spawnSnake();
@@ -226,7 +228,8 @@ void Helper::checkBonus()
             bonusState = true;
             bonus.setX(qrand() % ((590 + 1) - 10) + 10);
             bonus.setY(qrand() % ((590 + 1) - 10) + 10);
-            bonusTime = (qrand() % ((100 + 1) - 10) + 10)*100;
+            bonusMaxTime = (qrand() % ((100 + 1) - 10) + 10)*100;
+            bonusTime = bonusMaxTime;
         }
     }
     else
@@ -270,7 +273,16 @@ void Helper::draw(QPainter *painter)
     painter->drawImage(body[1].x - 10, body[1].y - 10, headTransformed);
 
     painter->drawImage(fruit.x() - 10, fruit.y() - 10, fruitImage);
-    if (bonusState) painter->drawImage(bonus.x() - 10, bonus.y() - 10, bonusImage);
+    //Тут будет порядочная отрисовка бонусов. Когда-нибудь потом
+    painter->setPen(bonusPen);
+    if (bonusState)
+    {
+        //Ебаная магия. Если иногда будет пропадать индикатор, копать сюда
+        int startAngle = 90;
+        int endAngle = 360*bonusTime/bonusMaxTime;
+        painter->drawImage(bonus.x() - 10, bonus.y() - 10, bonusImage);
+        painter->drawArc(bonus.x()  -10, bonus.y() - 10,22, 22, 16*startAngle, 16*endAngle);
+    }
 }
 
 void Helper::toggleRunning()

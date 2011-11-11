@@ -54,7 +54,8 @@ private:
     QFont textFont;
     QPen circlePen;
     QPen textPen;
-    int count, direction, bonusTime, bonusDelay;
+    QPen bonusPen;
+    int count, direction, bonusTime, bonusDelay, bonusMaxTime;
     bool dead, running, bonusState;
     cell *head;
     cell body[1000];
