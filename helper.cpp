@@ -160,7 +160,7 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
         //Проверка не сдохли ли мы нахуй
         for (int i = count; i > 10; i -= 2)
         {
-            if (sqrt(pow((body[1].x - body[i].x),2) + pow((body[1].y - body[i].y),2)) < 20)
+            if (pow((body[1].x - body[i].x),2) + pow((body[1].y - body[i].y),2) < 400)
             {
                 dead = true;
                 if (i == count)
@@ -194,7 +194,7 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
 
 bool Helper::eatFruit()
 {
-    if (sqrt(pow((body[1].x - fruit.x()),2) + pow((body[1].y - fruit.y()),2)) < 20)
+    if (pow((body[1].x - fruit.x()),2) + pow((body[1].y - fruit.y()),2) < 400)
     {
         screen->increaseScore(sqrt(pow((300 - fruit.x()),2) + pow((300 - fruit.y()),2)));
         this->spawnFruit();
@@ -206,7 +206,7 @@ bool Helper::eatFruit()
 
 bool Helper::eatBonus()
 {
-    if (bonusState && sqrt(pow((body[1].x - bonus.x()),2) + pow((body[1].y - bonus.y()),2)) < 20)
+    if (bonusState && pow((body[1].x - bonus.x()),2) + pow((body[1].y - bonus.y()),2) < 400)
     {
         bonusState = false;
         bonusDelay = (qrand() % ((50 + 1) - 10) + 10) * 100;
