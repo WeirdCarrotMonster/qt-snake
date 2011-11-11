@@ -299,7 +299,7 @@ void Helper::draw(QPainter *painter)
     }
 
     //Отрисовка всплывающих сообщений с очками
-    if (!animationList.empty())
+    if (!animationList.empty() )
     {
         animation a;
         int i = 0;
@@ -310,7 +310,8 @@ void Helper::draw(QPainter *painter)
             else if (i == animationList.count())
                 a = animationList.takeLast();
             //Разбор типов анимаций
-            a.state += 2;
+            if (running)
+                a.state += 2;
             if (a.type == "SCORE")
             {
                 //Тут отрисовка надписи
