@@ -224,12 +224,12 @@ void Helper::spawnFruit()
 {
     fruit.setX(qrand() % ((590 + 1) - 10) + 10);
     fruit.setY(qrand() % ((590 + 1) - 10) + 10);
-    animation a;
-    a.x = fruit.x();
-    a.y = fruit.y();
-    a.state = 0;
-    a.type = "SPAWN";
-    animationList.append(a);
+    animation b;
+    b.x = fruit.x();
+    b.y = fruit.y();
+    b.state = 0;
+    b.type = "SPAWN";
+    animationList.append(b);
 }
 
 void Helper::checkBonus()
@@ -303,27 +303,30 @@ void Helper::draw(QPainter *painter)
     {
         animation a;
         int i = 0;
-        while (i <= animationList.count())
+        while (i <= animationList.count() && !animationList.empty())
         {
             if (i < animationList.count())
                 a = animationList.takeAt(i);
-            else
+            else if (i == animationList.count())
                 a = animationList.takeLast();
             //Разбор типов анимаций
             a.state += 2;
             if (a.type == "SCORE")
             {
                 //Тут отрисовка надписи
+                painter->setPen(textPen);
+                painter->setBrush(Qt::NoBrush);
                 painter->drawText(a.x + a.state/6 - 10, a.y - a.state/3 - 20, QString::number(a.value));
             }
 
             else if (a.type == "SPAWN")
             {
-                spawnPen = QPen(QColor(100, 255, 0, 255 - a.state*4));
-                spawnPen.setWidth(7 - a.state/20);
+                //Круг яблока
+                int radius = 20 + a.state;
+                spawnPen = QPen(QColor(100, 255, 0, 164 - radius*2));
+                spawnPen.setWidth(1 + radius/10);
                 painter->setPen(spawnPen);
                 painter->setBrush(Qt::NoBrush);
-                int radius = 20 + a.state/4;
                 painter->drawEllipse(a.x - radius/2, a.y - radius/2, radius, radius);
             }
             if (a.state < 60)
