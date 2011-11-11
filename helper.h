@@ -23,8 +23,18 @@ struct cell_t
     struct cell_t *prev;
     bool fruit;
 };
-
 typedef struct cell_t cell;
+
+struct animation_t
+{
+    QString type;
+    int state;
+    int value;
+    int x;
+    int y;
+
+};
+typedef struct animation_t animation;
 
 class Helper
 {
@@ -55,8 +65,10 @@ private:
     QPen circlePen;
     QPen textPen;
     QPen bonusPen;
+    QPen spawnPen;
     int count, direction, bonusTime, bonusDelay, bonusMaxTime;
     bool dead, running, bonusState;
+    QList<animation> animationList;
     cell *head;
     cell body[1000];
     QPoint fruit, bonus;

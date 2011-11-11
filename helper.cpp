@@ -191,7 +191,15 @@ bool Helper::eatFruit()
 {
     if (pow((body[1].x - fruit.x()),2) + pow((body[1].y - fruit.y()),2) < 400)
     {
-        screen->increaseScore(sqrt(pow((300 - fruit.x()),2) + pow((300 - fruit.y()),2)));
+        int s = sqrt(pow((300 - fruit.x()),2) + pow((300 - fruit.y()),2));
+        screen->increaseScore(s);
+        animation a;
+        a.x = fruit.x();
+        a.y = fruit.y();
+        a.value = s;
+        a.state = 0;
+        a.type = "SCORE";
+        animationList.append(a);
         this->spawnFruit();
         return true;
     }
@@ -216,6 +224,12 @@ void Helper::spawnFruit()
 {
     fruit.setX(qrand() % ((590 + 1) - 10) + 10);
     fruit.setY(qrand() % ((590 + 1) - 10) + 10);
+    animation a;
+    a.x = fruit.x();
+    a.y = fruit.y();
+    a.state = 0;
+    a.type = "SPAWN";
+    animationList.append(a);
 }
 
 void Helper::checkBonus()
@@ -282,6 +296,42 @@ void Helper::draw(QPainter *painter)
         int endAngle = 360*bonusTime/bonusMaxTime;
         painter->drawImage(bonus.x() - 10, bonus.y() - 10, bonusImage);
         painter->drawArc(bonus.x()  -10, bonus.y() - 10,22, 22, 16*startAngle, 16*endAngle);
+    }
+
+    //Отрисовка всплывающих сообщений с очками
+    if (!animationList.empty())
+    {
+        animation a;
+        int i = 0;
+        while (i <= animationList.count())
+        {
+            if (i < animationList.count())
+                a = animationList.takeAt(i);
+            else
+                a = animationList.takeLast();
+            //Разбор типов анимаций
+            a.state += 2;
+            if (a.type == "SCORE")
+            {
+                //Тут отрисовка надписи
+                painter->drawText(a.x + a.state/6 - 10, a.y - a.state/3 - 20, QString::number(a.value));
+            }
+
+            else if (a.type == "SPAWN")
+            {
+                spawnPen = QPen(QColor(100, 255, 0, 255 - a.state*4));
+                spawnPen.setWidth(7 - a.state/20);
+                painter->setPen(spawnPen);
+                painter->setBrush(Qt::NoBrush);
+                int radius = 20 + a.state/4;
+                painter->drawEllipse(a.x - radius/2, a.y - radius/2, radius, radius);
+            }
+            if (a.state < 60)
+            {
+                animationList.insert(i, a);
+                i++;
+            }
+        }
     }
 }
 
