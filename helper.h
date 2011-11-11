@@ -68,13 +68,15 @@ private:
     QBrush circleBrush;
     QImage fruitImage;
     QImage bonusImage;
+    QImage randomBonusImage;
     QImage headImage;
     QFont textFont;
     QPen circlePen;
     QPen textPen;
     QPen bonusPen;
     QPen spawnPen;
-    int count, direction, bonusTime, bonusDelay, bonusMaxTime;
+    int count, direction, bonusDelay;
+    int additionalSleep;
     bool dead, running, bonusState;
     QList<animation> animationList;
     QList<bonus> bonusList;

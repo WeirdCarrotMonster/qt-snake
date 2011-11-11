@@ -4,5 +4,6 @@
         <file>logo.ico</file>
         <file>fruit.png</file>
         <file>bonus.png</file>
+        <file>random_bonus.png</file>
     </qresource>
 </RCC>

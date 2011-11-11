@@ -1,5 +1,6 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <iostream>
 #include "scorescreen.h"
 
 scoreScreen::scoreScreen(QWidget *parent) :
@@ -41,8 +42,65 @@ void scoreScreen::increaseScore(int s)
 
 void scoreScreen::addAchievement(QString s)
 {
+    /*
     if (list->findItems(s, Qt::MatchExactly).empty())
         list->addItem(s);
+        */
+}
+
+void scoreScreen::addBonus(QString name)
+{
+    bool found = false;
+    if (!bonusList.empty())
+    {
+        bonus2 a;
+        int i = 0;
+        while (i <= bonusList.count() && !bonusList.empty() && !found)
+        {
+            if (i < bonusList.count())
+                a = bonusList.takeAt(i);
+            else if (i == bonusList.count())
+                a = bonusList.takeLast();
+
+            if (a.name == name)
+            {
+                a.bonusTime = 10000;
+                found = true;
+            }
+            bonusList.insert(i, a);
+            i++;
+        }
+    }
+    if (!found)
+    {
+        bonus2 b;
+        b.name = name;
+        b.bonusTime = 10000;
+        bonusList.append(b);
+    }
+}
+
+bool scoreScreen::haveBonus(QString name)
+{
+    bool found = false;
+    if (!bonusList.empty())
+    {
+        bonus2 a;
+        int i = 1;
+        while (i <= bonusList.count() && !bonusList.empty() && !found)
+        {
+            if (i < bonusList.count())
+                a = bonusList.takeAt(i);
+            else if (i == bonusList.count())
+                a = bonusList.takeLast();
+
+            if (a.name == name)
+                found = true;
+            bonusList.insert(i, a);
+            i++;
+        }
+    }
+    return found;
 }
 
 void scoreScreen::clear()
@@ -53,6 +111,7 @@ void scoreScreen::clear()
     scoreLabel->setText(QString::number(0));
     multiplyLabel->setText(QString::number(1));
     multiplyTimeLabel->setText(QString::number(multiplyTime/10));
+    bonusList.clear();
     list->clear();
 }
 
@@ -65,6 +124,7 @@ void scoreScreen::addMultiplier()
 
 void scoreScreen::pass(int elapsed)
 {
+    list->clear();
     if (multiplyTime > 0)
     {
         multiplyTime -= elapsed;
@@ -75,10 +135,40 @@ void scoreScreen::pass(int elapsed)
             multiplyTime = 0;
         }
     }
-    multiplyTimeLabel->setText(QString::number(multiplyTime/10));
+    multiplyTimeLabel->setText(QString::number(multiplyTime/100));
+
+    if (!bonusList.empty())
+    {
+        bonus2 a;
+        int i = 1;
+        while (i <= bonusList.count() && !bonusList.empty())
+        {
+            if (i < bonusList.count())
+                a = bonusList.takeAt(i);
+            else if (i == bonusList.count())
+                a = bonusList.takeLast();
+
+            a.bonusTime -= 30;
+            if (a.bonusTime > 0)
+            {
+                QString s;
+                s += a.name;
+                s += " ";
+                s += QString::number(a.bonusTime/100);
+                list->addItem(s);
+                bonusList.insert(i, a);
+                i++;
+            }
+        }
+    }
 }
 
 int scoreScreen::currentMultiplier()
 {
     return multiply;
+}
+
+int scoreScreen::currentScore()
+{
+    return score;
 }

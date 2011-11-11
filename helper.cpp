@@ -14,11 +14,12 @@ Helper::Helper(Widget *w, scoreScreen *s)
     QTime time = QTime::currentTime();
     qsrand((uint)time.msec());
     widget = w;
-
+    additionalSleep = 10;
     QResource::registerResource("resource.qrc");
     fruitImage = QImage(":/images/fruit.png");
     headImage = QImage(":/images/head.png");
     bonusImage = QImage(":/images/bonus.png");
+    randomBonusImage = QImage(":/images/random_bonus.png");
 
     background = QBrush(QColor(64, 32, 64));
     circleBrush = QBrush(QColor(0xa6, 0xce, 0x39));
@@ -120,18 +121,10 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
         body[1].x += diff_x;
         body[1].y += diff_y;
 
-        //Не пришло ли время сожрать фрукт?
         if (this->eatFruit())
-        {
-            //Жрем фрукт, все дела
             body[1].fruit = true;
-        }
-        //Теперь бонус
         this->eatBonus();
 
-
-        //Тут все хуево. Вообще хуево, не надо так делать. Никогда.
-        //Вот теперь нормик
         for (int i = count; i>1; i--)
         {
             if (i == count && body[i].fruit)
@@ -151,10 +144,11 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
         }
 
         body[1].fruit = false;
+
         //Проверка не сдохли ли мы нахуй
         for (int i = count; i > 33; i -= 2)
         {
-            if (pow((body[1].x - body[i].x),2) + pow((body[1].y - body[i].y),2) < 400)
+            if (!screen->haveBonus("GHOST") && (pow((body[1].x - body[i].x),2) + pow((body[1].y - body[i].y),2) < 400))
             {
                 dead = true;
                 if (i == count)
@@ -162,10 +156,11 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
             }
         }
         //Уебывание в стену
-        if (body[1].x < 10 || body[1].x > 590 || body[1].y < 10 || body[1].y > 590)
+        if (!screen->haveBonus("GHOST") && (body[1].x < 10 || body[1].x > 590 || body[1].y < 10 || body[1].y > 590))
             dead = true;
 
         //ПОЧТИ уебывание в стену, дает ачивку
+        //TODO:fix
         if ((body[1].x >= 11 && body[1].x <= 15) ||
             (body[1].x <= 589 && body[1].x >= 584) ||
             (body[1].y <= 11 && body[1].y >= 15) ||
@@ -188,7 +183,10 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
 
 bool Helper::eatFruit()
 {
-    if (pow((body[1].x - fruit.x()),2) + pow((body[1].y - fruit.y()),2) < 400)
+    int bonusRange = 0;
+    if (screen->haveBonus("GATHERER"))
+        bonusRange = 60;
+    if (pow((body[1].x - fruit.x()),2) + pow((body[1].y - fruit.y()),2) < 400 + bonusRange*bonusRange)
     {
         int s = sqrt(pow((300 - fruit.x()),2) + pow((300 - fruit.y()),2));
         screen->increaseScore(s);
@@ -227,7 +225,10 @@ bool Helper::eatBonus()
             }
             else
             {
-                screen->addMultiplier();
+                if (a.type == "MULTIPLIER")
+                    screen->addMultiplier();
+                else
+                    screen->addBonus(a.type);
                 return true;
             }
         }
@@ -272,7 +273,13 @@ void Helper::checkBonus()
     if (bonusDelay <= 0)
     {
         bonus b;
-        b.type = "MULTIPLIER";
+        int variant = (qrand() % ((10 + 1) - 1) + 1);
+        if (variant >= 1 && variant < 9)
+            b.type = "MULTIPLIER";
+        else if (variant == 9)
+            b.type = "GATHERER";
+        else if (variant == 10)
+            b.type = "GHOST";
         b.bonusMaxTime = (qrand() % ((100 + 1) - 10) + 10)*10000;
         b.bonusTime = b.bonusMaxTime;
         b.coords.setX(qrand() % ((590 + 1) - 10) + 10);
@@ -284,6 +291,9 @@ void Helper::checkBonus()
 
 void Helper::draw(QPainter *painter)
 {
+    int transparency = 255;
+    if (screen->haveBonus("GHOST"))
+        transparency = 100;
     painter->setPen(circlePen);
     for (int i=count; i> 1; i--)
     {
@@ -296,12 +306,11 @@ void Helper::draw(QPainter *painter)
             else if (i == count && body[i-1].fruit)
                 radius += 5;
         }
-        painter->setBrush(QBrush(QColor(39 + (radius - 20)*10, 135, 63)));
+        painter->setBrush(QBrush(QColor(39 + (radius - 20)*10, 135, 63, transparency)));
         painter->drawEllipse(body[i].x - radius/2, body[i].y - radius/2,
                              radius, radius);
     }
 
-    //и тут внезапно ГОЛОВА такая
     QTransform myTransform;
     myTransform.rotate(direction + 90);
     QImage headTransformed = headImage.transformed(myTransform);
@@ -310,10 +319,16 @@ void Helper::draw(QPainter *painter)
     h = headTransformed.height();
     headTransformed = headTransformed.copy( (w/2 - 10), (h/2 - 10), 20, 20);
     painter->drawImage(body[1].x - 10, body[1].y - 10, headTransformed);
-
+    if (screen->haveBonus("GATHERER"))
+    {
+        QPen tempPen;
+        tempPen = QPen(QColor(255, 255, 0, 150));
+        tempPen.setWidth(4);
+        painter->setPen(tempPen);
+        painter->setBrush(Qt::NoBrush);
+        painter->drawEllipse(body[1].x - 39, body[1].y - 39, 78, 78);
+    }
     painter->drawImage(fruit.x() - 10, fruit.y() - 10, fruitImage);
-    //Тут будет порядочная отрисовка бонусов. Когда-нибудь потом
-    //А вот и она. Или типо она
 
     if (!bonusList.empty())
     {
@@ -330,6 +345,8 @@ void Helper::draw(QPainter *painter)
             int endAngle = 360*a.bonusTime/a.bonusMaxTime;
             if (a.type == "MULTIPLIER")
                 painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, bonusImage);
+            else
+                painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, randomBonusImage);
             painter->drawArc(a.coords.x()  -10, a.coords.y() - 10,22, 22, 16*startAngle, 16*endAngle);
             bonusList.insert(i, a);
             i++;

@@ -23,7 +23,7 @@ Window::Window()
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), native, SLOT(animate()));
-    timer->start(30);
+    timer->start(25);
     this->setFixedSize(820, 620);
 }
 
