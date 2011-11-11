@@ -21,6 +21,7 @@ struct cell_t
     int radius;
     struct cell_t *next;
     struct cell_t *prev;
+    bool fruit;
 };
 
 typedef struct cell_t cell;

@@ -43,6 +43,7 @@ void Helper::spawnSnake()
         body[i].radius = 20;
         body[i].x = 200;
         body[i].y = 400 + body[i].radius/2*i;
+        body[i].fruit = false;
         count++;
     }
 
@@ -122,41 +123,33 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
         if (this->eatFruit())
         {
             //Жрем фрукт, все дела
-            body[1].radius += 10;
+            body[1].fruit = true;
         }
         //Теперь бонус
         this->eatBonus();
 
 
         //Тут все хуево. Вообще хуево, не надо так делать. Никогда.
+        //Вот теперь нормик
         for (int i = count; i>1; i--)
         {
-            if (i == count && body[i].radius == 30)
+            if (i == count && body[i].fruit)
             {
                 count++;
                 body[count].x = body[i].x;
                 body[count].y = body[i].y;
+                body[count].fruit = false;
                 body[count].radius = 20;
             }
             body[i].x = body[i-1].x;
             body[i].y = body[i-1].y;
-            if (body[i-1].radius == 30)
-                body[i].radius = 30;
+            if (body[i-1].fruit)
+                body[i].fruit = true;
             else
-                body[i].radius = 20;
+                body[i].fruit = false;
         }
 
-        for (int i = 2; i <= count; i++)
-        {
-            if (body[i].radius == 30)
-            {
-                body[i-1].radius = 25;
-                if (i < count)
-                    body[i+1].radius = 25;
-            }
-        }
-
-        body[1].radius = 20;
+        body[1].fruit = false;
         //Проверка не сдохли ли мы нахуй
         for (int i = count; i > 10; i -= 2)
         {
@@ -252,9 +245,18 @@ void Helper::draw(QPainter *painter)
     painter->setPen(circlePen);
     for (int i=count; i> 1; i--)
     {
-        painter->setBrush(QBrush(QColor(39 + (body[i].radius - 20)*10, 135, 63)));
-        painter->drawEllipse(body[i].x - body[i].radius/2, body[i].y - body[i].radius/2,
-                             body[i].radius, body[i].radius);
+        int radius = body[i].radius;
+        if (body[i].fruit) radius += 10;
+        else
+        {
+            if (i < count && (body[i-1].fruit || body[i+1].fruit))
+                radius += 5;
+            else if (i == count && body[i-1].fruit)
+                radius += 5;
+        }
+        painter->setBrush(QBrush(QColor(39 + (radius - 20)*10, 135, 63)));
+        painter->drawEllipse(body[i].x - radius/2, body[i].y - radius/2,
+                             radius, radius);
     }
 
     //и тут внезапно ГОЛОВА такая
