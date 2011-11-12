@@ -77,6 +77,7 @@ private:
     QImage bonusImage;
     QImage randomBonusImage;
     QImage headImage;
+    QImage pillsImage;
     QFont textFont;
     QPen circlePen;
     QPen textPen;
@@ -84,6 +85,7 @@ private:
     QPen spawnPen;
     int count, direction, bonusDelay, fruitDelay;
     int additionalSleep;
+    int pillsHere;
     bool dead, running, bonusState;
     QList<animation> animationList;
     QList<bonus> bonusList;

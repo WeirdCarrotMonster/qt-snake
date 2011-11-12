@@ -2,6 +2,7 @@
 #include <QTime>
 #include "helper.h"
 #include <math.h>
+#include <iostream>
 #include <QDebug>
 
 #define turn_degree 5
@@ -10,6 +11,7 @@
 Helper::Helper(Widget *w, scoreScreen *s)
 {
     screen = s;
+    pillsHere = 0;
     QTime time = QTime::currentTime();
     qsrand((uint)time.msec());
     widget = w;
@@ -18,6 +20,7 @@ Helper::Helper(Widget *w, scoreScreen *s)
     fruitImage = QImage(":/images/fruit.png");
     headImage = QImage(":/images/head.png");
     bonusImage = QImage(":/images/bonus.png");
+    pillsImage = QImage(":/images/pills.png");
     randomBonusImage = QImage(":/images/random_bonus.png");
 
     background = QBrush(QColor(64, 32, 64));
@@ -61,7 +64,6 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
     painter->fillRect(event->rect(), background);
     if (!dead && running)
     {
-        painter->save();
         this->checkBonus();
         this->checkFruit();
         qreal k = tan(direction * M_PI/180);
@@ -172,16 +174,9 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
             screen->increaseScore(5);
             screen->addAchievement("Obi-Wan");
         }
-        this->draw(painter);
-        painter->restore();
-        screen->pass(30);
+        screen->pass(25);
     }
-    else
-    {
-        painter->save();
-        draw(painter);
-        painter->restore();
-    }
+    this->draw(painter);
 }
 
 bool Helper::eatFruit()
@@ -247,6 +242,11 @@ bool Helper::eatBonus()
             {
                 if (a.type == "MULTIPLIER")
                     screen->addMultiplier();
+                else if (a.type == "PILLS")
+                {
+                    pillsHere += 400;
+                    screen->addBonus(a.type);
+                }
                 else
                     screen->addBonus(a.type);
                 return true;
@@ -282,8 +282,10 @@ void Helper::checkBonus()
     {
         bonus b;
         int variant = (qrand() % ((10 + 1) - 1) + 1);
-        if (variant >= 1 && variant < 9)
+        if (variant >= 1 && variant < 8)
             b.type = "MULTIPLIER";
+        else if (variant == 8)
+            b.type = "PILLS";
         else if (variant == 9)
             b.type = "GATHERER";
         else if (variant == 10)
@@ -325,6 +327,22 @@ void Helper::checkFruit()
 
 void Helper::draw(QPainter *painter)
 {
+    painter->save();
+    //Фон
+    //PILLZ HERE
+    if (pillsHere <= 0)
+        painter->setBrush(QBrush(QColor(125, 125, 125)));
+    else
+    {
+        painter->setBrush(QBrush(QColor(
+                                     50 + 75*(cos(M_PI*(pillsHere%400)/200 - M_PI/2) +1),
+                                     50 + 75*(sin(M_PI*(pillsHere%400)/200) +1),
+                                     50 + 75*(-sin(M_PI*(pillsHere%400)/200) +1))));
+        if (!dead && running) pillsHere--;
+    }
+    painter->drawRect(0,0,600,600);
+
+    //Тело
     int transparency = 255;
     if (screen->haveBonus("GHOST"))
         transparency = 100;
@@ -345,6 +363,7 @@ void Helper::draw(QPainter *painter)
                              radius, radius);
     }
 
+    //Голова
     QTransform myTransform;
     myTransform.rotate(direction + 90);
     QImage headTransformed = headImage.transformed(myTransform);
@@ -363,6 +382,7 @@ void Helper::draw(QPainter *painter)
         painter->drawEllipse(body[1].x - 39, body[1].y - 39, 78, 78);
     }
 
+    //Фрукты
     if (!fruitList.empty())
     {
         fruit a;
@@ -379,6 +399,7 @@ void Helper::draw(QPainter *painter)
         }
     }
 
+    //Бонусы
     if (!bonusList.empty())
     {
         painter->setPen(bonusPen);
@@ -394,6 +415,8 @@ void Helper::draw(QPainter *painter)
             int endAngle = 360*a.bonusTime/a.bonusMaxTime;
             if (a.type == "MULTIPLIER")
                 painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, bonusImage);
+            else if (a.type == "PILLS")
+                painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, pillsImage);
             else
                 painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, randomBonusImage);
             painter->drawArc(a.coords.x()  -10, a.coords.y() - 10,22, 22, 16*startAngle, 16*endAngle);
@@ -402,7 +425,7 @@ void Helper::draw(QPainter *painter)
         }
     }
 
-    //Отрисовка всплывающих сообщений с очками
+    //Анимации
     if (!animationList.empty() )
     {
         animation a;
@@ -444,6 +467,7 @@ void Helper::draw(QPainter *painter)
             }
         }
     }
+    painter->restore();
 }
 
 void Helper::toggleRunning()
