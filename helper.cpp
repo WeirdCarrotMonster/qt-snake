@@ -10,7 +10,6 @@
 Helper::Helper(Widget *w, scoreScreen *s)
 {
     screen = s;
-    pillsHere = 0;
     QTime time = QTime::currentTime();
     qsrand((uint)time.msec());
     widget = w;
@@ -41,6 +40,7 @@ void Helper::spawnSnake()
     fruitList.clear();
     animationList.clear();
     fruitDelay = 0;
+    pillsHere = 0;
     x = 200;
     y = 200;
     count = 0;
