@@ -5,7 +5,7 @@
 #include <QDebug>
 
 #define turn_degree 5
-#define step_size 10
+#define default_step_size 10
 
 Helper::Helper(Widget *w, scoreScreen *s)
 {
@@ -69,6 +69,9 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
         qreal c = cos(direction * M_PI/180);
         qreal s = sin(direction * M_PI/180);
 
+        int step_size = default_step_size;
+        if (screen->haveBonus("PILLS"))
+            step_size += 5*cos(pillsHere * M_PI/180 * 2);
         //Тут щитаем угол между вектором движения и вектором направления
         qreal degree;
         int temp_x, temp_y;
