@@ -2,7 +2,6 @@
 #include <QTime>
 #include "helper.h"
 #include <math.h>
-#include <iostream>
 #include <QDebug>
 
 #define turn_degree 5
