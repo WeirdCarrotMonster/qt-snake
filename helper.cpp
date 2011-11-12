@@ -36,6 +36,7 @@ void Helper::spawnSnake()
     dead = false;
     running = true;
     bonusList.clear();
+    fruitList.clear();
     animationList.clear();
     fruitDelay = 0;
     x = 200;
@@ -62,6 +63,7 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
     {
         painter->save();
         this->checkBonus();
+        this->checkFruit();
         qreal k = tan(direction * M_PI/180);
         qreal c = cos(direction * M_PI/180);
         qreal s = sin(direction * M_PI/180);
@@ -180,7 +182,6 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
         draw(painter);
         painter->restore();
     }
-    this->checkFruit();
 }
 
 bool Helper::eatFruit()
@@ -199,7 +200,7 @@ bool Helper::eatFruit()
                 a = fruitList.takeAt(i);
             else if (i == fruitList.count())
                 a = fruitList.takeLast();
-            if (pow((body[1].x - a.coords.x()),2) + pow((body[1].y - a.coords.y()),2) > 400 + bonusRange)
+            if (pow((body[1].x - a.coords.x()),2) + pow((body[1].y - a.coords.y()),2) > 400 + pow(bonusRange,2))
             {
                 fruitList.insert(i, a);
                 i++;
