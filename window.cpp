@@ -26,7 +26,7 @@ Window::Window()
     this->setFixedSize(820, 620);
 
     QStringList level;
-    level << "easy" << "normal" << "hard" << "elite" << "japanese";
+    level << "easy" << "normal" << "hard";
 
     QString title("Select level");
     QString query("levels:");
@@ -34,15 +34,11 @@ Window::Window()
 
     int delay;
     if (pick == "easy")
-        delay = 40;
-    else if (pick == "normal")
         delay = 30;
-    else if (pick == "hard")
+    else if (pick == "normal")
         delay = 25;
-    else if (pick == "elite")
+    else if (pick == "hard")
         delay = 20;
-    else if (pick == "japanese")
-        delay = 0;
     else
         delay = 25;
 
