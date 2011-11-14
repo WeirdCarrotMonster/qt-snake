@@ -6,5 +6,6 @@
         <file>bonus.png</file>
         <file>random_bonus.png</file>
         <file>pills.png</file>
+        <file>ghost.png</file>
     </qresource>
 </RCC>

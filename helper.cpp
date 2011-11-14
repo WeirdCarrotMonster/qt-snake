@@ -19,6 +19,7 @@ Helper::Helper(Widget *w, scoreScreen *s)
     headImage = QImage(":/images/head.png");
     bonusImage = QImage(":/images/bonus.png");
     pillsImage = QImage(":/images/pills.png");
+    ghostImage = QImage(":/images/ghost.png");
     randomBonusImage = QImage(":/images/random_bonus.png");
 
     background = QBrush(QColor(64, 32, 64));
@@ -248,8 +249,18 @@ bool Helper::eatBonus()
                     pillsHere += 400;
                     screen->addBonus(a.type);
                 }
-                else
+                else if (a.type == "GHOST")
+                {
+                    if (!screen->haveBonus("GHOST"))
+                    {
+                        animation b;
+                        b.state = 0;
+                        b.type = "MESSAGE";
+                        b.value = "GHOST";
+                        animationList.append(b);
+                    }
                     screen->addBonus(a.type);
+                }
                 return true;
             }
         }
@@ -448,6 +459,18 @@ void Helper::draw(QPainter *painter)
                 painter->setPen(textPen);
                 painter->setBrush(Qt::NoBrush);
                 painter->drawText(a.x + a.state/6 - 10, a.y - a.state/3 - 20, a.value);
+            }
+            else if (a.type == "MESSAGE")
+            {
+                if (a.value == "GHOST")
+                {
+                    //Оттюнить, хуево рисует
+                    painter->drawImage(QRect(300 - (ghostImage.width()*(a.state/2+1))/2,
+                                             300 - (ghostImage.height()*(a.state/2+1))/2,
+                                             ghostImage.width()*(a.state/2+1),
+                                             ghostImage.height()*(a.state/2+1)),
+                                       ghostImage);
+                }
             }
             else if (a.type == "SPAWN")
             {

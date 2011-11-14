@@ -75,6 +75,7 @@ private:
     QBrush circleBrush;
     QImage fruitImage;
     QImage bonusImage;
+    QImage ghostImage;
     QImage randomBonusImage;
     QImage headImage;
     QImage pillsImage;
