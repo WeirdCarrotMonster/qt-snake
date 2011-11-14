@@ -20,6 +20,7 @@ Helper::Helper(Widget *w, scoreScreen *s)
     bonusImage = QImage(":/images/bonus.png");
     pillsImage = QImage(":/images/pills.png");
     ghostImage = QImage(":/images/ghost.png");
+    collectorImage = QImage(":/images/collector.png");
     randomBonusImage = QImage(":/images/random_bonus.png");
 
     background = QBrush(QColor(64, 32, 64));
@@ -184,7 +185,7 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
 bool Helper::eatFruit()
 {
     int bonusRange = 0;
-    if (screen->haveBonus("GATHERER"))
+    if (screen->haveBonus("COLLECTOR"))
         bonusRange = 60;
 
     if (!fruitList.empty())
@@ -249,14 +250,14 @@ bool Helper::eatBonus()
                     pillsHere += 400;
                     screen->addBonus(a.type);
                 }
-                else if (a.type == "GHOST")
+                else
                 {
-                    if (!screen->haveBonus("GHOST"))
+                    if (!screen->haveBonus(a.type))
                     {
                         animation b;
                         b.state = 0;
                         b.type = "MESSAGE";
-                        b.value = "GHOST";
+                        b.value = a.type;
                         animationList.append(b);
                     }
                     screen->addBonus(a.type);
@@ -299,7 +300,7 @@ void Helper::checkBonus()
         else if (variant == 8)
             b.type = "PILLS";
         else if (variant == 9)
-            b.type = "GATHERER";
+            b.type = "COLLECTOR";
         else if (variant == 10)
             b.type = "GHOST";
         b.bonusMaxTime = (qrand() % ((100 + 1) - 10) + 10)*10000;
@@ -384,7 +385,7 @@ void Helper::draw(QPainter *painter)
     h = headTransformed.height();
     headTransformed = headTransformed.copy( (w/2 - 10), (h/2 - 10), 20, 20);
     painter->drawImage(body[1].x - 10, body[1].y - 10, headTransformed);
-    if (screen->haveBonus("GATHERER"))
+    if (screen->haveBonus("COLLECTOR"))
     {
         QPen tempPen;
         tempPen = QPen(QColor(255, 255, 0, 150));
@@ -462,15 +463,23 @@ void Helper::draw(QPainter *painter)
             }
             else if (a.type == "MESSAGE")
             {
+                QImage image;
                 if (a.value == "GHOST")
+                    image = ghostImage;
+                else
+                    image = collectorImage;
+                for (int y = 0; y < image.height(); ++y)
                 {
-                    //Оттюнить, хуево рисует
-                    painter->drawImage(QRect(300 - (ghostImage.width()*(a.state/2+1))/2,
-                                             300 - (ghostImage.height()*(a.state/2+1))/2,
-                                             ghostImage.width()*(a.state/2+1),
-                                             ghostImage.height()*(a.state/2+1)),
-                                       ghostImage);
+                  QRgb *row = (QRgb*)image.scanLine(y);
+                  for (int x = 0; x < image.width(); ++x)
+                    if (((unsigned char*)&row[x])[3] != 0)
+                        ((unsigned char*)&row[x])[3] = 180 - a.state*3;
                 }
+                painter->drawImage(QRect(300 - (image.width()*(a.state/2+1))/2,
+                                         300 - (image.height()*(a.state/2+1))/2,
+                                         image.width()*(a.state/2+1),
+                                         image.height()*(a.state/2+1)),
+                                   image);
             }
             else if (a.type == "SPAWN")
             {

@@ -76,6 +76,7 @@ private:
     QImage fruitImage;
     QImage bonusImage;
     QImage ghostImage;
+    QImage collectorImage;
     QImage randomBonusImage;
     QImage headImage;
     QImage pillsImage;
