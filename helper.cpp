@@ -48,7 +48,7 @@ void Helper::spawnSnake()
     {
         body[i].radius = 20;
         body[i].x = 200;
-        body[i].y = 400 + body[i].radius/2*i;
+        body[i].y = 400 + 10*i;
         body[i].fruit = false;
         count++;
     }
@@ -125,9 +125,6 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
         int diff_x = step_size*cos(direction * M_PI/180);
         int diff_y = step_size*sin(direction * M_PI/180);
 
-        body[1].x += diff_x;
-        body[1].y += diff_y;
-
         if (this->eatFruit())
             body[1].fruit = true;
         this->eatBonus();
@@ -151,6 +148,8 @@ void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
         }
 
         body[1].fruit = false;
+        body[1].x += diff_x;
+        body[1].y += diff_y;
 
         //Проверка не сдохли ли мы нахуй
         for (int i = count; i > 33; i -= 2)
