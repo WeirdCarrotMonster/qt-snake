@@ -43,8 +43,8 @@ void Helper::spawnSnake()
     animationList.clear();
     fruitDelay = 0;
     pillsHere = 0;
-    x = 200;
-    y = 200;
+    x = 300;
+    y = 300;
     count = 0;
     for (int i = 1; i< 20; i++)
     {
@@ -358,7 +358,7 @@ void Helper::draw(QPainter *painter)
     //Тело
     int transparency = 255;
     if (screen->haveBonus("GHOST"))
-        transparency = 100;
+        transparency = 50;
     painter->setPen(circlePen);
     for (int i=count; i> 1; i--)
     {
