@@ -15,7 +15,6 @@ class Widget : public QWidget
 
 public:
     Widget(Helper *helper, QWidget *parent);
-    int x;
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -23,7 +22,6 @@ protected:
 private:
     Helper *helper;
     QPainter painter;
-    int elapsed;
 };
 
 #endif

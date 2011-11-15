@@ -5,8 +5,6 @@
 Widget::Widget(Helper *helper, QWidget *parent)
     : QWidget(parent), helper(helper)
 {
-    x = 0;
-    elapsed = 0;
     setFixedSize(600, 600);
 }
 

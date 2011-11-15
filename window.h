@@ -16,14 +16,12 @@ class Window : public QWidget
 
 public:
     Window();
-    void setScore(int s);
 
 private:
     Helper *helper;
     Widget *native;
     QCursor *cursor;
     scoreScreen *screen;
-    void asd();
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event);

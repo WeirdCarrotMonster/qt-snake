@@ -2,7 +2,6 @@
 #include <QTime>
 #include "helper.h"
 #include <math.h>
-#include <QDebug>
 
 #define turn_degree 5
 #define default_step_size 10
@@ -13,7 +12,6 @@ Helper::Helper(Widget *w, scoreScreen *s)
     QTime time = QTime::currentTime();
     qsrand((uint)time.msec());
     widget = w;
-    additionalSleep = 10;
     QResource::registerResource("resource.qrc");
     fruitImage = QImage(":/images/fruit.png");
     headImage = QImage(":/images/head.png");
