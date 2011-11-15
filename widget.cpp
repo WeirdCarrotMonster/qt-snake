@@ -1,4 +1,3 @@
-#include <QtGui>
 #include "widget.h"
 #include "helper.h"
 
@@ -11,17 +10,10 @@ Widget::Widget(Helper *helper, QWidget *parent)
     setFixedSize(600, 600);
 }
 
-void Widget::animate()
-{
-    elapsed = (elapsed + qobject_cast<QTimer*>(sender())->interval()) % 1000;
-    repaint();
-}
-
 void Widget::paintEvent(QPaintEvent *event)
 {
-    QPainter painter;
     painter.begin(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    helper->animate(&painter, event, elapsed);
+    helper->animate(&painter, event);
     painter.end();
 }

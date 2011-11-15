@@ -60,7 +60,7 @@ void Helper::spawnSnake()
     this->checkFruit();
 }
 
-void Helper::animate(QPainter *painter, QPaintEvent *event, int elapsed)
+void Helper::animate(QPainter *painter, QPaintEvent *event)
 {
     painter->fillRect(event->rect(), background);
     if (!dead && running)

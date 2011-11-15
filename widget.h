@@ -2,6 +2,7 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include <QtGui>
 
 class Helper;
 QT_BEGIN_NAMESPACE
@@ -16,14 +17,12 @@ public:
     Widget(Helper *helper, QWidget *parent);
     int x;
 
-public slots:
-    void animate();
-
 protected:
     void paintEvent(QPaintEvent *event);
 
 private:
     Helper *helper;
+    QPainter painter;
     int elapsed;
 };
 

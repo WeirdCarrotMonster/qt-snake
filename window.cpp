@@ -44,7 +44,7 @@ Window::Window()
     else
         delay = 25;
 
-    connect(timer, SIGNAL(timeout()), native, SLOT(animate()));
+    connect(timer, SIGNAL(timeout()), native, SLOT(repaint()));
     timer->start(delay);
 }
 

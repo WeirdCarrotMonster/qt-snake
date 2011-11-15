@@ -60,7 +60,7 @@ public:
     int y;
 
 public:
-    void animate(QPainter *painter, QPaintEvent *event, int elapsed);
+    void animate(QPainter *painter, QPaintEvent *event);
 
 private:
     void draw(QPainter *painter);
