@@ -103,7 +103,10 @@ void scoreScreen::pass(int elapsed)
             else if (i == bonusList.count())
                 a = bonusList.takeLast();
 
-            a.bonusTime -= 30;
+            if (a.name != "PILLS")
+                a.bonusTime -= elapsed;
+            else
+                a.bonusTime -= 30;
             if (a.bonusTime > 0)
             {
                 QString s;

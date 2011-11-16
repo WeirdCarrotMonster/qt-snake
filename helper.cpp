@@ -1,7 +1,7 @@
 #include <QtGui>
 #include <QTime>
 #include "helper.h"
-#include <math.h>
+#include <cmath>
 
 #define turn_degree 5
 #define default_step_size 10
@@ -175,7 +175,10 @@ void Helper::animate(QPainter *painter, QPaintEvent *event)
             screen->increaseScore(5);
             screen->addAchievement("Obi-Wan");
         }
-        screen->pass(25);
+        int passTime = 30;
+        if (screen->haveBonus("PILLS"))
+            passTime += 15*cos(pillsHere * M_PI/180 * 2);
+        screen->pass(passTime);
     }
     this->draw(painter);
 }
