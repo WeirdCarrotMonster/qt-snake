@@ -27,12 +27,11 @@ public:
     int currentMultiplier();
     int currentScore();
 
+protected:
+    void paintEvent(QPaintEvent *event);
+
 private:
-    QLabel *scoreLabel;
-    QLabel *multiplyLabel;
-    QLabel *multiplyTimeLabel;
     QList<bonus2> bonusList;
-    QListWidget *list;
     int score, multiply;
     int multiplyTime;
 };

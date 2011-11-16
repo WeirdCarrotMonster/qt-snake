@@ -4,8 +4,6 @@
 #include "QCursor"
 #include <QDebug>
 #include <QMouseEvent>
-#include <QInputDialog>
-#include <QStringList>
 
 Window::Window()
     : QWidget()
@@ -24,28 +22,9 @@ Window::Window()
     this->setMouseTracking(true);
     QTimer *timer = new QTimer(this);
     this->setFixedSize(820, 620);
-
-    QStringList level;
-    level << "easy" << "normal" << "hard" << "IMPOSSIBRU";
-
-    QString title("Select level");
-    QString query("levels:");
-    QString pick = QInputDialog::getItem(0, title, query, level);
-
-    int delay;
-    if (pick == "easy")
-        delay = 30;
-    else if (pick == "normal")
-        delay = 25;
-    else if (pick == "hard")
-        delay = 20;
-    else if (pick == "IMPOSSIBRU")
-        delay = 0;
-    else
-        delay = 25;
-
     connect(timer, SIGNAL(timeout()), native, SLOT(repaint()));
-    timer->start(delay);
+    connect(timer, SIGNAL(timeout()), screen, SLOT(repaint()));
+    timer->start(25);
 }
 
 void Window::mouseMoveEvent(QMouseEvent *event)
