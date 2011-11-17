@@ -169,6 +169,7 @@ void scoreScreen::paintEvent(QPaintEvent *event)
 
     if (this->dead)
     {
+        topList = saver.getNewStats();
         //Отрисовка статов
         painter.setPen(Qt::NoPen);
         painter.setBrush(QBrush(QColor(100, 0, 0)));
@@ -177,10 +178,8 @@ void scoreScreen::paintEvent(QPaintEvent *event)
         painter.drawText(QRect(20, 225, 160, 15), "Top scores");
         int y = 240;
         int number = topList.count();
-        if (number > 23)
-            number = 23;
         int asd = 1;
-        while (number > 0)
+        while (asd <= 23)
         {
             QString s;
             s += QString::number(asd);
