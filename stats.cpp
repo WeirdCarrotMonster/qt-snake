@@ -24,6 +24,9 @@ QDataStream &operator>>( QDataStream &stream, gameResult &info )
     return stream;
 }
 
+inline bool operator<(const gameResult &a1, const gameResult &a2)
+{ return a1.points < a2.points; }
+
 stats::stats()
 {
     //Грузим gameResultList из файла
@@ -45,6 +48,7 @@ void stats::setStats(gameResult r)
     if (result.points == 0)
         return;
     list.append(result);
+    qSort(list);
 
     QFile file( "scores.dat" );
     if( !file.open( QIODevice::WriteOnly ) )
