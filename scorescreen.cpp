@@ -178,8 +178,10 @@ void scoreScreen::paintEvent(QPaintEvent *event)
         painter.drawText(QRect(20, 225, 160, 15), "Top scores");
         int y = 240;
         int number = topList.count();
+        if (number > 23)
+            number = 23;
         int asd = 1;
-        while (asd <= 23)
+        while (asd <= 23 && number > 0 && !topList.empty())
         {
             QString s;
             s += QString::number(asd);
