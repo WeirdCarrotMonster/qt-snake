@@ -1,7 +1,7 @@
 #include <QtGui>
 #include <QTime>
 #include "helper.h"
-#include <cmath>
+#include <math.h>
 
 #define turn_degree 5
 #define default_step_size 10
@@ -34,8 +34,8 @@ Helper::Helper(Widget *w, scoreScreen *s)
 
 void Helper::spawnSnake()
 {
-    dead = false;
     running = true;
+    screen->clear();
     bonusList.clear();
     fruitList.clear();
     animationList.clear();
@@ -61,7 +61,7 @@ void Helper::spawnSnake()
 void Helper::animate(QPainter *painter, QPaintEvent *event)
 {
     painter->fillRect(event->rect(), background);
-    if (!dead && running)
+    if (!screen->dead && running)
     {
         this->checkBonus();
         this->checkFruit();
@@ -156,29 +156,18 @@ void Helper::animate(QPainter *painter, QPaintEvent *event)
         {
             if (!screen->haveBonus("GHOST") && (pow((body[1].x - body[i].x),2) + pow((body[1].y - body[i].y),2) < 400))
             {
-                dead = true;
-                if (i == count)
-                    screen->addAchievement("Uroboros");
+                screen->dead = true;
+                screen->saveStats();
             }
         }
         //Уебывание в стену
         if (!screen->haveBonus("GHOST") && (body[1].x < 10 || body[1].x > 590 || body[1].y < 10 || body[1].y > 590))
-            dead = true;
-
-        //ПОЧТИ уебывание в стену, дает ачивку
-        //TODO:fix
-        if ((body[1].x >= 11 && body[1].x <= 15) ||
-            (body[1].x <= 589 && body[1].x >= 584) ||
-            (body[1].y <= 11 && body[1].y >= 15) ||
-            (body[1].y <= 589 && body[1].y >= 585))
         {
-            screen->increaseScore(5);
-            screen->addAchievement("Obi-Wan");
+            screen->dead = true;
+            screen->saveStats();
         }
-        int passTime = 30;
-        if (screen->haveBonus("PILLS"))
-            passTime += 15*cos(pillsHere * M_PI/180 * 2);
-        screen->pass(passTime);
+
+        screen->pass(25);
     }
     this->draw(painter);
 }
@@ -352,7 +341,7 @@ void Helper::draw(QPainter *painter)
                                      50 + 75*(cos(M_PI*(pillsHere%400)/200 - M_PI/2) +1),
                                      50 + 75*(sin(M_PI*(pillsHere%400)/200) +1),
                                      50 + 75*(-sin(M_PI*(pillsHere%400)/200) +1))));
-        if (!dead && running) pillsHere--;
+        if (!screen->dead && running) pillsHere--;
     }
     painter->drawRect(0,0,600,600);
 
@@ -451,7 +440,7 @@ void Helper::draw(QPainter *painter)
                 a = animationList.takeAt(i);
             else if (i == animationList.count())
                 a = animationList.takeLast();
-            if (running && !dead)
+            if (running && !screen->dead)
                 a.state += 2;
 
             //Разбор типов анимаций
@@ -507,7 +496,7 @@ void Helper::draw(QPainter *painter)
 void Helper::toggleRunning()
 {
     running = !running;
-    if (dead)
+    if (screen->dead)
     {
         spawnSnake();
         screen->clear();
