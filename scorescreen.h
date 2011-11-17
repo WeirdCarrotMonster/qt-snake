@@ -36,7 +36,7 @@ private:
     QList<bonus2> bonusList;
     int multiply, multiplyTime;
     gameResult result;
-    gameResultListInt topListInt;
+    gameResultList topList;
     stats saver;
 };
 

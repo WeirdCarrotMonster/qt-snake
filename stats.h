@@ -8,7 +8,7 @@ QT_BEGIN_NAMESPACE
 class QWidget;
 QT_END_NAMESPACE
 
-struct gameResult_T
+struct gameResult
 {
     int points;
     int multipliers;
@@ -18,9 +18,7 @@ struct gameResult_T
     int pills;
 };
 
-typedef struct gameResult_T gameResult;
 typedef QList<gameResult> gameResultList;
-typedef QList<int> gameResultListInt;
 
 class stats : public QWidget
 {
@@ -28,16 +26,14 @@ class stats : public QWidget
 
 public:
     stats();
-    ~stats();
     void setStats(gameResult r);
-    gameResultListInt getNewStatsInt();
+    gameResultList getNewStats();
 
 private:
     void fillStats();
     void saveStats();
     gameResult result;
     gameResultList list;
-    gameResultListInt listInt;
 };
 
 #endif // STATS_H

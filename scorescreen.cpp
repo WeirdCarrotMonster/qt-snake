@@ -176,7 +176,7 @@ void scoreScreen::paintEvent(QPaintEvent *event)
         painter.setPen(Qt::white);
         painter.drawText(QRect(20, 225, 160, 15), "Top scores");
         int y = 240;
-        int number = topListInt.count();
+        int number = topList.count();
         if (number > 23)
             number = 23;
         int asd = 1;
@@ -186,7 +186,7 @@ void scoreScreen::paintEvent(QPaintEvent *event)
             s += QString::number(asd);
             asd++;
             s += QString(") ");
-            s += QString::number(topListInt.at(number - 1));
+            s += QString::number(topList.at(number - 1).points);
             painter.drawText(QRect(20, y, 160, 15), s);
             number--;
             y+= 15;
@@ -206,5 +206,5 @@ void scoreScreen::paintEvent(QPaintEvent *event)
 void scoreScreen::saveStats()
 {
     saver.setStats(result);
-    topListInt = saver.getNewStatsInt();
+    topList = saver.getNewStats();
 }

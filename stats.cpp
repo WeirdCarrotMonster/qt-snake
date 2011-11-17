@@ -1,25 +1,64 @@
+#include <QFile>
 #include "stats.h"
+
+QDataStream &operator<<( QDataStream &stream, const gameResult &info )
+{
+    stream << info.points <<
+              info.multipliers <<
+              info.fruits <<
+              info.ghosts <<
+              info.collectors <<
+              info.pills;
+
+    return stream;
+}
+
+QDataStream &operator>>( QDataStream &stream, gameResult &info )
+{
+    stream >> info.points;
+    stream >> info.multipliers;
+    stream >> info.fruits;
+    stream >> info.ghosts;
+    stream >> info.collectors;
+    stream >> info.pills;
+    return stream;
+}
 
 stats::stats()
 {
     //Грузим gameResultList из файла
-}
+    QFile file( "scores.dat" );
+    if( !file.open( QIODevice::ReadOnly ) )
+      return;
 
-stats::~stats()
-{
-    //Записываем gameResultList в файл
+    QDataStream stream( &file );
+    stream.setVersion( QDataStream::Qt_4_2 );
 
+    stream >> list;
+
+    file.close();
 }
 
 void stats::setStats(gameResult r)
 {
     result = r;
+    if (result.points == 0)
+        return;
     list.append(result);
+
+    QFile file( "scores.dat" );
+    if( !file.open( QIODevice::WriteOnly ) )
+      return;
+
+    QDataStream stream( &file );
+    stream.setVersion( QDataStream::Qt_4_2 );
+
+    stream << list;
+
+    file.close();
 }
 
-gameResultListInt stats::getNewStatsInt()
+gameResultList stats::getNewStats()
 {
-    listInt.append(result.points);
-    qSort(listInt);
-    return listInt;
+    return list;
 }
