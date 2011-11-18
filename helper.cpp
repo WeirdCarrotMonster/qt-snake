@@ -168,7 +168,7 @@ void Helper::animate(QPainter *painter, QPaintEvent *event)
             screen->saveStats();
         }
 
-        screen->pass(25);
+        screen->pass(40);
     }
     this->draw(painter);
 }
