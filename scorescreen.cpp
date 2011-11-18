@@ -74,7 +74,6 @@ void scoreScreen::clear()
     result.points = 0;
     multiply = 1;
     multiplyTime = 0;
-    scoreAnimation = 370;
     bonusList.clear();
 }
 
@@ -128,6 +127,9 @@ int scoreScreen::currentMultiplier()
     return multiply;
 }
 
+inline bool operator<(const gameResult &a1, const gameResult &a2)
+{ return a1.points < a2.points; }
+
 void scoreScreen::paintEvent(QPaintEvent *event)
 {
     QPainter painter;
@@ -167,40 +169,38 @@ void scoreScreen::paintEvent(QPaintEvent *event)
         starty += 60;
     }
 
-    if (this->dead)
+    topList = saver.getNewStats();
+    if (!this->dead)
     {
-        topList = saver.getNewStats();
-        //Отрисовка статов
-        painter.setPen(Qt::NoPen);
-        painter.setBrush(QBrush(QColor(100, 0, 0)));
-        painter.drawRect(15, 220, 170, 370);
-        painter.setPen(Qt::white);
-        painter.drawText(QRect(20, 225, 160, 15), "Top scores");
-        int y = 240;
-        int number = topList.count();
-        if (number > 23)
-            number = 23;
-        int asd = 1;
-        while (asd <= 23 && number > 0 && !topList.empty())
-        {
-            QString s;
-            s += QString::number(asd);
-            asd++;
-            s += QString(") ");
-            s += QString::number(topList.at(number - 1).points);
-            painter.drawText(QRect(20, y, 160, 15), s);
-            number--;
-            y+= 15;
-        }
-        if (scoreAnimation != 0)
-        {
-            painter.setPen(Qt::NoPen);
-            painter.setBrush(QBrush(QColor(125, 125, 125)));
-            painter.drawRect(15, 220 + 370 - scoreAnimation, 170, scoreAnimation);
-            scoreAnimation -= 5;
-        }
+        topList.append(result);
+        qSort(topList);
     }
-
+    //Отрисовка статов
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(QBrush(QColor(100, 0, 0)));
+    painter.drawRect(15, 220, 170, 370);
+    painter.setPen(Qt::white);
+    painter.drawText(QRect(20, 225, 160, 15), "Top scores");
+    int y = 240;
+    int number = topList.count();
+    if (number > 23)
+        number = 23;
+    int asd = 1;
+    while (asd <= 23 && number > 0 && !topList.empty())
+    {
+        if (topList.at(number - 1).points == result.points)
+            painter.setPen(Qt::blue);
+        else
+            painter.setPen(Qt::white);
+        QString s;
+        s += QString::number(asd);
+        asd++;
+        s += QString(") ");
+        s += QString::number(topList.at(number - 1).points);
+        painter.drawText(QRect(20, y, 160, 15), s);
+        number--;
+        y+= 15;
+    }
     painter.end();
 }
 

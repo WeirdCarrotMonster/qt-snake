@@ -26,7 +26,6 @@ public:
     void saveStats();
     bool haveBonus(QString name);
     bool dead;
-    int scoreAnimation;
     int currentMultiplier();
 
 protected:
