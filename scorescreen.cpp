@@ -128,7 +128,10 @@ int scoreScreen::currentMultiplier()
 }
 
 inline bool operator<(const gameResult &a1, const gameResult &a2)
-{ return a1.points < a2.points; }
+{ return a1.points > a2.points; }
+
+inline bool operator==(const gameResult &a1, const gameResult &a2)
+{ return a1.points == a2.points; }
 
 void scoreScreen::paintEvent(QPaintEvent *event)
 {
@@ -178,17 +181,15 @@ void scoreScreen::paintEvent(QPaintEvent *event)
     //Отрисовка статов
     painter.setPen(Qt::NoPen);
     painter.setBrush(QBrush(QColor(100, 0, 0)));
-    painter.drawRect(15, 220, 170, 370);
+    painter.drawRect(15, 350, 170, 235);
     painter.setPen(Qt::white);
-    painter.drawText(QRect(20, 225, 160, 15), "Top scores");
-    int y = 240;
-    int number = topList.count();
-    if (number > 23)
-        number = 23;
+    painter.drawText(QRect(20, 355, 160, 15), "Top scores");
+    int y = 370;
+    int number = 0;
     int asd = 1;
-    while (asd <= 23 && number > 0 && !topList.empty())
+    while (asd <= 10 && number < topList.count() && !topList.empty())
     {
-        if (topList.at(number - 1).points == result.points)
+        if (topList.at(number).points == result.points)
             painter.setPen(Qt::blue);
         else
             painter.setPen(Qt::white);
@@ -196,11 +197,31 @@ void scoreScreen::paintEvent(QPaintEvent *event)
         s += QString::number(asd);
         asd++;
         s += QString(") ");
-        s += QString::number(topList.at(number - 1).points);
+        s += QString::number(topList.at(number).points);
         painter.drawText(QRect(20, y, 160, 15), s);
-        number--;
+        number++;
         y+= 15;
     }
+
+    painter.setPen(Qt::white);
+    int position = topList.indexOf(result);
+    if (position > 9)
+    {
+        painter.drawText(QRect(20, 520, 160, 15), QString("Your result:"));
+        painter.setPen(Qt::blue);
+        QString s;
+        s += QString::number(position);
+        s += QString(") ");
+        s += QString::number(result.points);
+        painter.drawText(QRect(20, 535, 160, 15), s);
+    }
+    else if (position > 2 && position <= 9)
+        painter.drawText(QRect(20, 520, 160, 15), QString("Top ten!"));
+    else if (position > 0 && position <= 2)
+        painter.drawText(QRect(20, 520, 160, 15), QString("Top three!"));
+    else if (position == 0)
+        painter.drawText(QRect(20, 520, 160, 15), QString("Best score!"));
+
     painter.end();
 }
 

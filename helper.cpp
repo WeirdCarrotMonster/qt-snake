@@ -19,6 +19,7 @@ Helper::Helper(Widget *w, scoreScreen *s)
     pillsImage = QImage(":/images/pills.png");
     ghostImage = QImage(":/images/ghost.png");
     collectorImage = QImage(":/images/collector.png");
+    scissorsImage = QImage(":/images/scissors.png");
     randomBonusImage = QImage(":/images/random_bonus.png");
 
     background = QBrush(QColor(64, 32, 64));
@@ -235,6 +236,11 @@ bool Helper::eatBonus()
             {
                 if (a.type == "MULTIPLIER")
                     screen->addMultiplier();
+                else if (a.type == "SCISSORS")
+                {
+                    screen->increaseScore(count*30/100 * 50);
+                    count = count*70/100;
+                }
                 else if (a.type == "PILLS")
                 {
                     pillsHere += 400;
@@ -285,8 +291,10 @@ void Helper::checkBonus()
     {
         bonus b;
         int variant = (qrand() % ((10 + 1) - 1) + 1);
-        if (variant >= 1 && variant < 8)
+        if (variant >= 1 && variant < 7)
             b.type = "MULTIPLIER";
+        else if (variant == 7)
+            b.type = "SCISSORS";
         else if (variant == 8)
             b.type = "PILLS";
         else if (variant == 9)
@@ -420,6 +428,8 @@ void Helper::draw(QPainter *painter)
                 painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, bonusImage);
             else if (a.type == "PILLS")
                 painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, pillsImage);
+            else if (a.type == "SCISSORS")
+                painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, scissorsImage);
             else
                 painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, randomBonusImage);
             painter->drawArc(a.coords.x()  -10, a.coords.y() - 10,22, 22, 16*startAngle, 16*endAngle);

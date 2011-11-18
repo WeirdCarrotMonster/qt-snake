@@ -8,5 +8,6 @@
         <file>pills.png</file>
         <file>ghost.png</file>
         <file>collector.png</file>
+        <file>scissors.png</file>
     </qresource>
 </RCC>

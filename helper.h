@@ -77,6 +77,7 @@ private:
     QImage bonusImage;
     QImage ghostImage;
     QImage collectorImage;
+    QImage scissorsImage;
     QImage randomBonusImage;
     QImage headImage;
     QImage pillsImage;
