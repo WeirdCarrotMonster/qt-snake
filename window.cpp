@@ -24,7 +24,7 @@ Window::Window()
     this->setFixedSize(820, 620);
     connect(timer, SIGNAL(timeout()), native, SLOT(repaint()));
     connect(timer, SIGNAL(timeout()), screen, SLOT(repaint()));
-    timer->start(40);
+    timer->start(20);
 }
 
 void Window::mouseMoveEvent(QMouseEvent *event)

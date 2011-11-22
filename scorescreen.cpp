@@ -180,9 +180,9 @@ void scoreScreen::paintEvent(QPaintEvent *event)
     }
     //Отрисовка статов
     painter.setPen(Qt::NoPen);
-    painter.setBrush(QBrush(QColor(100, 0, 0)));
+    painter.setBrush(QBrush(QColor(238, 238, 236)));
     painter.drawRect(15, 350, 170, 235);
-    painter.setPen(Qt::white);
+    painter.setPen(QColor(46, 52, 54));
     painter.drawText(QRect(20, 355, 160, 15), "Top scores");
     int y = 370;
     int number = 0;
@@ -190,9 +190,9 @@ void scoreScreen::paintEvent(QPaintEvent *event)
     while (asd <= 10 && number < topList.count() && !topList.empty())
     {
         if (topList.at(number).points == result.points)
-            painter.setPen(Qt::blue);
+            painter.setPen(QColor(78, 154, 6));
         else
-            painter.setPen(Qt::white);
+            painter.setPen(QColor(46, 52, 54));
         QString s;
         s += QString::number(asd);
         asd++;
@@ -203,12 +203,12 @@ void scoreScreen::paintEvent(QPaintEvent *event)
         y+= 15;
     }
 
-    painter.setPen(Qt::white);
+    painter.setPen(QColor(46, 52, 54));
     int position = topList.indexOf(result);
     if (position > 9)
     {
         painter.drawText(QRect(20, 520, 160, 15), QString("Your result:"));
-        painter.setPen(Qt::blue);
+        painter.setPen(QColor(78, 154, 6));
         QString s;
         s += QString::number(position);
         s += QString(") ");

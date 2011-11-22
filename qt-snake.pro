@@ -18,4 +18,4 @@ TARGET      = qt-snake
 RESOURCES += \
     resources.qrc
 
-
+QMAKE_CXXFLAGS += -std=c++0x

@@ -6,6 +6,7 @@
 #include <QPen>
 #include <QCursor>
 #include <QResource>
+#include <array>
 #include "widget.h"
 #include "scorescreen.h"
 
@@ -19,8 +20,6 @@ struct cell_t
     int x;
     int y;
     int radius;
-    struct cell_t *next;
-    struct cell_t *prev;
     bool fruit;
 };
 typedef struct cell_t cell;
@@ -92,8 +91,9 @@ private:
     QList<animation> animationList;
     QList<bonus> bonusList;
     QList<fruit> fruitList;
-    cell *head;
-    cell body[1000];
+    std::array<cell, 1000> body_new;
+    std::array<cell, 1000> body;
+    int step;
 };
 
 #endif

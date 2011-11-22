@@ -42,18 +42,20 @@ void Helper::spawnSnake()
     animationList.clear();
     fruitDelay = 0;
     pillsHere = 0;
+    bonusDelay = 10000;
     x = 300;
     y = 300;
     count = 0;
     for (int i = 1; i< 20; i++)
     {
-        body[i].radius = 20;
-        body[i].x = 200;
-        body[i].y = 400 + 10*i;
-        body[i].fruit = false;
+        body_new[i].radius = 20;
+        body_new[i].x = 200;
+        body_new[i].y = 400 + 10*i;
+        body_new[i].fruit = false;
         count++;
     }
-
+    step = 0;
+    body = body_new;
     direction = -90;
     //90 это вниз. до 180 включительно
     this->checkFruit();
@@ -66,109 +68,124 @@ void Helper::animate(QPainter *painter, QPaintEvent *event)
     {
         this->checkBonus();
         this->checkFruit();
-        qreal k = tan(direction * M_PI/180);
-        qreal c = cos(direction * M_PI/180);
-        qreal s = sin(direction * M_PI/180);
-
-        int step_size = default_step_size;
-        if (screen->haveBonus("PILLS"))
-            step_size += 5*cos(pillsHere * M_PI/180 * 2);
-        //Тут щитаем угол между вектором движения и вектором направления
-        qreal degree;
-        int temp_x, temp_y;
-        int new_x, new_y;
-        new_x = x - body[1].x;
-        new_y = y - body[1].y;
-        temp_x = c*100;
-        temp_y = s*100;
-        degree = (temp_x*new_x + temp_y*new_y)/(sqrt(pow(temp_x,2) + pow(temp_y,2))*sqrt(pow(new_x,2) + pow(new_y,2)));
-        //=================
-        int degreeBonus = degree + 2;
-
-        if (direction != 0)
+        if (step != 0)
         {
-
-            if ( (y - body[1].y) > k*(x - body[1].x) )
+            body[1].x = (body[1].x + body_new[1].x)/2;
+            body[1].y = (body[1].y + body_new[1].y)/2;
+            for (int i = count; i>1; i--)
             {
-                if (c > 0 && s > 0)
-                    direction += turn_degree*degreeBonus;
-                else if (c < 0 && s > 0)
-                    direction -= turn_degree*degreeBonus;
-                else if (c > 0 && s < 0)
-                    direction += turn_degree*degreeBonus;
-                else if (c < 0 && s < 0)
-                    direction -= turn_degree*degreeBonus;
+                body[i].x = body[i-1].x;
+                body[i].y = body[i-1].y;
             }
-            else if ( (y - body[1].y) < k*(x - body[1].x) )
-            {
-                if (c > 0 && s > 0)
-                    direction -= turn_degree*degreeBonus;
-                else if (c < 0 && s > 0)
-                    direction += turn_degree*degreeBonus;
-                else if (c > 0 && s < 0)
-                    direction -= turn_degree*degreeBonus;
-                else if (c < 0 && s < 0)
-                    direction += turn_degree*degreeBonus;
-            }
+            step = 0;
         }
         else
         {
-            if (y > body[1].y)
-                direction += turn_degree*degreeBonus;
-            else if (y < body[1].y)
-                direction -= turn_degree*degreeBonus;
-        }
-        if (direction > 180)
-            direction = -360 + direction;
-        else if (direction < -180)
-            direction = 360 + direction;
+            qreal k = tan(direction * M_PI/180);
+            qreal c = cos(direction * M_PI/180);
+            qreal s = sin(direction * M_PI/180);
 
-        int diff_x = step_size*cos(direction * M_PI/180);
-        int diff_y = step_size*sin(direction * M_PI/180);
+            int step_size = default_step_size;
+            if (screen->haveBonus("PILLS"))
+                step_size += 5*cos(pillsHere * M_PI/180 * 2);
+            //Тут щитаем угол между вектором движения и вектором направления
+            qreal degree;
+            int temp_x, temp_y;
+            int new_x, new_y;
+            new_x = x - body_new[1].x;
+            new_y = y - body_new[1].y;
+            temp_x = c*100;
+            temp_y = s*100;
+            degree = (temp_x*new_x + temp_y*new_y)/(sqrt(pow(temp_x,2) + pow(temp_y,2))*sqrt(pow(new_x,2) + pow(new_y,2)));
+            //=================
+            int degreeBonus = degree + 2;
 
-        if (this->eatFruit())
-            body[1].fruit = true;
-        this->eatBonus();
-
-        for (int i = count; i>1; i--)
-        {
-            if (i == count && body[i].fruit)
+            if (direction != 0)
             {
-                count++;
-                body[count].x = body[i].x;
-                body[count].y = body[i].y;
-                body[count].fruit = false;
-                body[count].radius = 20;
+
+                if ( (y - body_new[1].y) > k*(x - body_new[1].x) )
+                {
+                    if (c > 0 && s > 0)
+                        direction += turn_degree*degreeBonus;
+                    else if (c < 0 && s > 0)
+                        direction -= turn_degree*degreeBonus;
+                    else if (c > 0 && s < 0)
+                        direction += turn_degree*degreeBonus;
+                    else if (c < 0 && s < 0)
+                        direction -= turn_degree*degreeBonus;
+                }
+                else if ( (y - body_new[1].y) < k*(x - body_new[1].x) )
+                {
+                    if (c > 0 && s > 0)
+                        direction -= turn_degree*degreeBonus;
+                    else if (c < 0 && s > 0)
+                        direction += turn_degree*degreeBonus;
+                    else if (c > 0 && s < 0)
+                        direction -= turn_degree*degreeBonus;
+                    else if (c < 0 && s < 0)
+                        direction += turn_degree*degreeBonus;
+                }
             }
-            body[i].x = body[i-1].x;
-            body[i].y = body[i-1].y;
-            if (body[i-1].fruit)
-                body[i].fruit = true;
             else
-                body[i].fruit = false;
-        }
+            {
+                if (y > body_new[1].y)
+                    direction += turn_degree*degreeBonus;
+                else if (y < body_new[1].y)
+                    direction -= turn_degree*degreeBonus;
+            }
+            if (direction > 180)
+                direction = -360 + direction;
+            else if (direction < -180)
+                direction = 360 + direction;
 
-        body[1].fruit = false;
-        body[1].x += diff_x;
-        body[1].y += diff_y;
+            int diff_x = step_size*cos(direction * M_PI/180);
+            int diff_y = step_size*sin(direction * M_PI/180);
 
-        //Проверка не сдохли ли мы нахуй
-        for (int i = count; i > 33; i -= 2)
-        {
-            if (!screen->haveBonus("GHOST") && (pow((body[1].x - body[i].x),2) + pow((body[1].y - body[i].y),2) < 400))
+            if (this->eatFruit())
+                body_new[1].fruit = true;
+            this->eatBonus();
+
+            for (int i = count; i>1; i--)
+            {
+                if (i == count && body_new[i].fruit)
+                {
+                    count++;
+                    body_new[count].x = body_new[i].x;
+                    body_new[count].y = body_new[i].y;
+                    body_new[count].fruit = false;
+                    body_new[count].radius = 20;
+                }
+                body_new[i].x = body_new[i-1].x;
+                body_new[i].y = body_new[i-1].y;
+                if (body_new[i-1].fruit)
+                    body_new[i].fruit = true;
+                else
+                    body_new[i].fruit = false;
+            }
+
+            body_new[1].fruit = false;
+            body_new[1].x += diff_x;
+            body_new[1].y += diff_y;
+
+            //Проверка не сдохли ли мы нахуй
+            for (int i = count; i > 33; i -= 2)
+            {
+                if (!screen->haveBonus("GHOST") && (pow((body_new[1].x - body_new[i].x),2) + pow((body_new[1].y - body_new[i].y),2) < 400))
+                {
+                    screen->dead = true;
+                    screen->saveStats();
+                }
+            }
+            //Уебывание в стену
+            if (!screen->haveBonus("GHOST") && (body_new[1].x < 10 || body_new[1].x > 590 || body_new[1].y < 10 || body_new[1].y > 590))
             {
                 screen->dead = true;
                 screen->saveStats();
             }
+            body = body_new;
+            step = 1;
         }
-        //Уебывание в стену
-        if (!screen->haveBonus("GHOST") && (body[1].x < 10 || body[1].x > 590 || body[1].y < 10 || body[1].y > 590))
-        {
-            screen->dead = true;
-            screen->saveStats();
-        }
-
-        screen->pass(40);
+        screen->pass(20);
     }
     this->draw(painter);
 }
@@ -189,7 +206,7 @@ bool Helper::eatFruit()
                 a = fruitList.takeAt(i);
             else if (i == fruitList.count())
                 a = fruitList.takeLast();
-            if (pow((body[1].x - a.coords.x()),2) + pow((body[1].y - a.coords.y()),2) > 400 + pow(bonusRange,2))
+            if (pow((body_new[1].x - a.coords.x()),2) + pow((body_new[1].y - a.coords.y()),2) > 400 + pow(bonusRange,2))
             {
                 fruitList.insert(i, a);
                 i++;
@@ -227,7 +244,7 @@ bool Helper::eatBonus()
                 a = bonusList.takeAt(i);
             else if (i == bonusList.count())
                 a = bonusList.takeLast();
-            if (pow((body[1].x - a.coords.x()),2) + pow((body[1].y - a.coords.y()),2) > 400)
+            if (pow((body_new[1].x - a.coords.x()),2) + pow((body_new[1].y - a.coords.y()),2) > 400)
             {
                 bonusList.insert(i, a);
                 i++;
@@ -278,7 +295,7 @@ void Helper::checkBonus()
             else if (i == bonusList.count())
                 a = bonusList.takeLast();
 
-            a.bonusTime -= 3000;
+            a.bonusTime -= 20;
             if (a.bonusTime > 0)
             {
                 bonusList.insert(i, a);
@@ -301,7 +318,7 @@ void Helper::checkBonus()
             b.type = "COLLECTOR";
         else if (variant == 10)
             b.type = "GHOST";
-        b.bonusMaxTime = (qrand() % ((100 + 1) - 10) + 10)*10000;
+        b.bonusMaxTime = (qrand() % ((10000 + 1000) - 1000) + 1000);
         b.bonusTime = b.bonusMaxTime;
         b.coords.setX(qrand() % ((590 + 1) - 10) + 10);
         b.coords.setY(qrand() % ((590 + 1) - 10) + 10);
