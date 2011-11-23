@@ -84,12 +84,6 @@ void Helper::animate(QPainter *painter, QPaintEvent *event)
             {
                 body[i].x = (body[i].x + body_new[i].x)/2;
                 body[i].y = (body[i].y + body_new[i].y)/2;
-                /*
-                if (body_new[i-1].fruit)
-                    body_new[i].fruit = true;
-                else
-                    body_new[i].fruit = false;
-                */
             }
             step = 0;
         }
