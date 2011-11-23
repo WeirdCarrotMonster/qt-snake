@@ -45,7 +45,7 @@ typedef struct bonus_t bonus;
 
 struct fruit_t
 {
-    QString type;
+    int type;
     QPoint coords;
 };
 typedef struct fruit_t fruit;
@@ -72,7 +72,7 @@ private:
     Widget *widget;
     QBrush background;
     QBrush circleBrush;
-    QImage fruitImage;
+    QImage fruitImage[10];
     QImage bonusImage;
     QImage ghostImage;
     QImage collectorImage;

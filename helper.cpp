@@ -13,7 +13,9 @@ Helper::Helper(Widget *w, scoreScreen *s)
     qsrand((uint)time.msec());
     widget = w;
     QResource::registerResource("resource.qrc");
-    fruitImage = QImage(":/images/fruit.png");
+    fruitImage[0] = QImage(":/images/fruit.png");
+    fruitImage[1] = QImage(":/images/orange.png");
+    fruitImage[2] = QImage(":/images/banana.png");
     headImage = QImage(":/images/head.png");
     bonusImage = QImage(":/images/bonus.png");
     pillsImage = QImage(":/images/pills.png");
@@ -339,7 +341,7 @@ void Helper::checkFruit()
     if ( (fruitDelay <= 0 || fruitList.empty()) && fruitList.size() <= 10)
     {
         fruit b;
-        b.type = (qrand() % ((10 + 1) - 1) + 1);
+        b.type = qrand() % 3;
         b.coords.setX(qrand() % ((590 + 1) - 10) + 10);
         b.coords.setY(qrand() % ((590 + 1) - 10) + 10);
         animation a;
@@ -421,7 +423,7 @@ void Helper::draw(QPainter *painter)
                 a = fruitList.takeAt(i);
             else if (i == fruitList.count())
                 a = fruitList.takeLast();
-            painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, fruitImage);
+            painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, fruitImage[a.type]);
             fruitList.insert(i, a);
             i++;
         }
@@ -468,7 +470,7 @@ void Helper::draw(QPainter *painter)
             else if (i == animationList.count())
                 a = animationList.takeLast();
             if (running && !screen->dead)
-                a.state += 2;
+                a.state += 1;
 
             //Разбор типов анимаций
             if (a.type == "SCORE")

@@ -9,5 +9,7 @@
         <file>ghost.png</file>
         <file>collector.png</file>
         <file>scissors.png</file>
+        <file>orange.png</file>
+        <file>banana.png</file>
     </qresource>
 </RCC>
