@@ -70,17 +70,30 @@ void Helper::animate(QPainter *painter, QPaintEvent *event)
         this->checkFruit();
         if (step != 0)
         {
-            body[1].x = (body[1].x + body_new[1].x)/2;
-            body[1].y = (body[1].y + body_new[1].y)/2;
-            for (int i = count; i>1; i--)
+            if (body_new[count].fruit)
             {
-                body[i].x = body[i-1].x;
-                body[i].y = body[i-1].y;
+                tempTail = true;
+                body_new[count + 1].x = body_new[count].x;
+                body_new[count + 1].y = body_new[count].y;
+                body_new[count + 1].fruit = false;
+                body_new[count + 1].radius = 20;
+            }
+            for (int i = count; i>0; i--)
+            {
+                body[i].x = (body[i].x + body_new[i].x)/2;
+                body[i].y = (body[i].y + body_new[i].y)/2;
+                /*
+                if (body_new[i-1].fruit)
+                    body_new[i].fruit = true;
+                else
+                    body_new[i].fruit = false;
+                */
             }
             step = 0;
         }
         else
         {
+            body = body_new;
             qreal k = tan(direction * M_PI/180);
             qreal c = cos(direction * M_PI/180);
             qreal s = sin(direction * M_PI/180);
@@ -182,7 +195,6 @@ void Helper::animate(QPainter *painter, QPaintEvent *event)
                 screen->dead = true;
                 screen->saveStats();
             }
-            body = body_new;
             step = 1;
         }
         screen->pass(20);

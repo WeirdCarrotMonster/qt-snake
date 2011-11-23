@@ -87,7 +87,7 @@ private:
     QPen spawnPen;
     int count, direction, bonusDelay, fruitDelay;
     int pillsHere;
-    bool dead, running, bonusState;
+    bool dead, running, bonusState, tempTail;
     QList<animation> animationList;
     QList<bonus> bonusList;
     QList<fruit> fruitList;
