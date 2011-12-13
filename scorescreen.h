@@ -27,6 +27,7 @@ public:
     bool haveBonus(QString name);
     bool dead;
     int currentMultiplier();
+    gameResult totalResult();
 
 protected:
     void paintEvent(QPaintEvent *event);

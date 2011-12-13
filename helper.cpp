@@ -183,6 +183,7 @@ void Helper::animate(QPainter *painter, QPaintEvent *event)
                 {
                     screen->dead = true;
                     screen->saveStats();
+                    totalGameResult = screen->totalResult();
                 }
             }
             //Уебывание в стену
@@ -190,6 +191,7 @@ void Helper::animate(QPainter *painter, QPaintEvent *event)
             {
                 screen->dead = true;
                 screen->saveStats();
+                totalGameResult = screen->totalResult();
             }
             step = 1;
         }
@@ -264,6 +266,7 @@ bool Helper::eatBonus()
                 else if (a.type == "SCISSORS")
                 {
                     screen->increaseScore(count*30/100 * 50);
+                    screen->addBonus("SCISSORS");
                     count = count*70/100;
                 }
                 else if (a.type == "PILLS")
@@ -524,6 +527,29 @@ void Helper::draw(QPainter *painter)
                 i++;
             }
         }
+    }
+
+    //Экран статов
+    if (screen->dead)
+    {
+        painter->setPen(Qt::green);
+        painter->setBrush(QBrush(QColor(0, 0, 0, 100)));
+        painter->drawRect(50, 50, 500, 500);
+        painter->setPen(textPen);
+        painter->drawText(QRect(100, 100, 100, 20), "Total points:");
+        painter->drawText(QRect(200, 100, 100, 20), QString::number(totalGameResult.points));
+        painter->drawText(QRect(100, 120, 100, 20), "Multipliers :");
+        painter->drawText(QRect(200, 120, 100, 20), QString::number(totalGameResult.multipliers));
+        painter->drawText(QRect(100, 140, 100, 20), "Fruits collected:");
+        painter->drawText(QRect(200, 140, 100, 20), QString::number(totalGameResult.fruits));
+        painter->drawText(QRect(100, 160, 100, 20), "Pills collected:");
+        painter->drawText(QRect(200, 160, 100, 20), QString::number(totalGameResult.pills));
+        painter->drawText(QRect(100, 180, 100, 20), "Collectors:");
+        painter->drawText(QRect(200, 180, 100, 20), QString::number(totalGameResult.collectors));
+        painter->drawText(QRect(100, 200, 100, 20), "Ghosts:");
+        painter->drawText(QRect(200, 200, 100, 20), QString::number(totalGameResult.ghosts));
+        painter->drawText(QRect(100, 220, 100, 20), "Scissors:");
+        painter->drawText(QRect(200, 220, 100, 20), QString::number(totalGameResult.scissors));
     }
     painter->restore();
 }

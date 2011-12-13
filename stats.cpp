@@ -8,7 +8,8 @@ QDataStream &operator<<( QDataStream &stream, const gameResult &info )
               info.fruits <<
               info.ghosts <<
               info.collectors <<
-              info.pills;
+              info.pills <<
+              info.scissors;
 
     return stream;
 }
@@ -21,6 +22,7 @@ QDataStream &operator>>( QDataStream &stream, gameResult &info )
     stream >> info.ghosts;
     stream >> info.collectors;
     stream >> info.pills;
+    stream >> info.scissors;
     return stream;
 }
 

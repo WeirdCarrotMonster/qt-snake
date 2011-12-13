@@ -88,6 +88,7 @@ private:
     int count, direction, bonusDelay, fruitDelay;
     int pillsHere;
     bool dead, running, bonusState, tempTail;
+    gameResult totalGameResult;
     QList<animation> animationList;
     QList<bonus> bonusList;
     QList<fruit> fruitList;

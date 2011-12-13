@@ -47,9 +47,36 @@ void scoreScreen::addBonus(QString name)
             result.collectors++;
         else if (name == "PILLS")
             result.pills++;
+        else if (name == "SCISSORS")
+            result.scissors++;
         b.bonusTime = 10000;
-        bonusList.append(b);
+        if (name != "SCISSORS") bonusList.append(b);
     }
+}
+
+gameResult scoreScreen::totalResult()
+{
+    gameResult tr;
+    tr.collectors = 0;
+    tr.fruits = 0;
+    tr.ghosts = 0;
+    tr.multipliers = 0;
+    tr.pills = 0;
+    tr.points = 0;
+    tr.scissors = 0;
+    int number = 0;
+    while (number < topList.count() && !topList.empty())
+    {
+        tr.points += topList.at(number).points;
+        tr.collectors += topList.at(number).collectors;
+        tr.fruits += topList.at(number).fruits;
+        tr.ghosts += topList.at(number).ghosts;
+        tr.multipliers += topList.at(number).multipliers;
+        tr.pills += topList.at(number).pills;
+        tr.scissors += topList.at(number).scissors;
+        number++;
+    }
+    return tr;
 }
 
 bool scoreScreen::haveBonus(QString name)
@@ -72,6 +99,7 @@ void scoreScreen::clear()
     result.multipliers = 0;
     result.pills = 0;
     result.points = 0;
+    result.scissors = 0;
     multiply = 1;
     multiplyTime = 0;
     bonusList.clear();

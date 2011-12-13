@@ -16,6 +16,7 @@ struct gameResult
     int ghosts;
     int collectors;
     int pills;
+    int scissors;
 };
 
 typedef QList<gameResult> gameResultList;
