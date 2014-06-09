@@ -9,6 +9,8 @@
 #include <array>
 #include "widget.h"
 #include "scorescreen.h"
+#include "fruit.h"
+#include "animation.h"
 
 QT_BEGIN_NAMESPACE
 class QPainter;
@@ -24,17 +26,6 @@ struct cell_t
 };
 typedef struct cell_t cell;
 
-struct animation_t
-{
-    QString type;
-    int state;
-    QString value;
-    int x;
-    int y;
-
-};
-typedef struct animation_t animation;
-
 struct bonus_t
 {
     QString type;
@@ -42,13 +33,6 @@ struct bonus_t
     int bonusTime, bonusMaxTime;
 };
 typedef struct bonus_t bonus;
-
-struct fruit_t
-{
-    int type;
-    QPoint coords;
-};
-typedef struct fruit_t fruit;
 
 class Helper
 {
@@ -72,10 +56,7 @@ private:
     Widget *widget;
     QBrush background;
     QBrush circleBrush;
-    QImage fruitImage[10];
     QImage bonusImage;
-    QImage ghostImage;
-    QImage collectorImage;
     QImage scissorsImage;
     QImage randomBonusImage;
     QImage headImage;
@@ -89,12 +70,13 @@ private:
     int pillsHere;
     bool dead, running, bonusState, tempTail;
     gameResult totalGameResult;
-    QList<animation> animationList;
+    QList<animation *> animationList;
     QList<bonus> bonusList;
-    QList<fruit> fruitList;
+    QList<fruit *> fruitList;
     std::array<cell, 1000> body_new;
     std::array<cell, 1000> body;
     int step;
+    int collectorStage;
 };
 
 #endif

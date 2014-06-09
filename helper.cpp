@@ -13,14 +13,10 @@ Helper::Helper(Widget *w, scoreScreen *s)
     qsrand((uint)time.msec());
     widget = w;
     QResource::registerResource("resource.qrc");
-    fruitImage[0] = QImage(":/images/fruit.png");
-    fruitImage[1] = QImage(":/images/orange.png");
-    fruitImage[2] = QImage(":/images/banana.png");
+
     headImage = QImage(":/images/head.png");
     bonusImage = QImage(":/images/bonus.png");
     pillsImage = QImage(":/images/pills.png");
-    ghostImage = QImage(":/images/ghost.png");
-    collectorImage = QImage(":/images/collector.png");
     scissorsImage = QImage(":/images/scissors.png");
     randomBonusImage = QImage(":/images/random_bonus.png");
 
@@ -33,6 +29,7 @@ Helper::Helper(Widget *w, scoreScreen *s)
     textPen = QPen(Qt::white);
     textFont.setPixelSize(50);
     this->spawnSnake();
+    collectorStage = 0;
 }
 
 void Helper::spawnSnake()
@@ -206,39 +203,28 @@ bool Helper::eatFruit()
     if (screen->haveBonus("COLLECTOR"))
         bonusRange = 60;
 
-    if (!fruitList.empty())
+    QList<fruit *> flist = fruitList;
+    foreach(fruit *a, flist)
     {
-        fruit a;
-        int i = 0;
-        while (i <= fruitList.count() && !fruitList.empty())
+        if (pow((body_new[1].x - a->coords.x()),2) + pow((body_new[1].y - a->coords.y()),2) < 400 + pow(bonusRange,2))
         {
-            if (i < fruitList.count())
-                a = fruitList.takeAt(i);
-            else if (i == fruitList.count())
-                a = fruitList.takeLast();
-            if (pow((body_new[1].x - a.coords.x()),2) + pow((body_new[1].y - a.coords.y()),2) > 400 + pow(bonusRange,2))
-            {
-                fruitList.insert(i, a);
-                i++;
-            }
-            else
-            {
-                int s = sqrt(pow((300 - a.coords.x()),2) + pow((300 - a.coords.y()),2));
-                screen->increaseScore(s);
-                animation b;
-                b.x = a.coords.x();
-                b.y = a.coords.y();
-                b.value += QString::number(s);
-                b.value += QString("x");
-                b.value += QString::number(screen->currentMultiplier());
-                b.state = 0;
-                b.type = "SCORE";
-                animationList.append(b);
-                this->checkFruit();
-                return true;
-            }
+            int s = sqrt(pow((300 - a->coords.x()),2) + pow((300 - a->coords.y()),2));
+            screen->increaseScore(s);
+            animation *b = new animation;
+            b->coords = a->coords;
+            fruitList.removeAll(a);
+            delete a;
+            b->value += QString::number(s);
+            b->value += QString("x");
+            b->value += QString::number(screen->currentMultiplier());
+            b->state = 0;
+            b->type = "SCORE";
+            animationList.append(b);
+            this->checkFruit();
+            return true;
         }
     }
+
     return false;
 }
 
@@ -278,10 +264,12 @@ bool Helper::eatBonus()
                 {
                     if (!screen->haveBonus(a.type))
                     {
-                        animation b;
-                        b.state = 0;
-                        b.type = "MESSAGE";
-                        b.value = a.type;
+                        if (a.type == "COLLECTOR")
+                            collectorStage = 0;
+                        animation *b = new animation();
+                        b->state = 0;
+                        b->type = "MESSAGE";
+                        b->value = a.type;
                         animationList.append(b);
                     }
                     screen->addBonus(a.type);
@@ -333,11 +321,10 @@ void Helper::checkBonus()
         b.bonusTime = b.bonusMaxTime;
         b.coords.setX(qrand() % ((590 + 1) - 10) + 10);
         b.coords.setY(qrand() % ((590 + 1) - 10) + 10);
-        animation a;
-        a.x = b.coords.x();
-        a.y = b.coords.y();
-        a.state = 0;
-        a.type = "SPAWN";
+        animation *a = new animation();
+        a->coords = b.coords;
+        a->state = 0;
+        a->type = "SPAWN";
         animationList.append(a);
         bonusList.append(b);
         bonusDelay = ((qrand() % ((50 + 1) - 10) + 10) * 10)*10;
@@ -349,15 +336,11 @@ void Helper::checkFruit()
     fruitDelay -= 30;
     if ( (fruitDelay <= 0 || fruitList.empty()) && fruitList.size() <= 10)
     {
-        fruit b;
-        b.type = qrand() % 3;
-        b.coords.setX(qrand() % ((590 + 1) - 10) + 10);
-        b.coords.setY(qrand() % ((590 + 1) - 10) + 10);
-        animation a;
-        a.x = b.coords.x();
-        a.y = b.coords.y();
-        a.state = 0;
-        a.type = "SPAWN";
+        fruit *b = new fruit();
+        animation *a = new animation();
+        a->coords = b->coords;
+        a->state = 0;
+        a->type = "SPAWN";
         animationList.append(a);
         fruitList.append(b);
         fruitDelay = ((qrand() % ((50 + 1) - 10) + 10) * 10)*10;
@@ -413,30 +396,23 @@ void Helper::draw(QPainter *painter)
     painter->drawImage(body[1].x - 10, body[1].y - 10, headTransformed);
     if (screen->haveBonus("COLLECTOR"))
     {
-        QPen tempPen;
-        tempPen = QPen(QColor(255, 255, 0, 150));
-        tempPen.setWidth(4);
-        painter->setPen(tempPen);
-        painter->setBrush(Qt::NoBrush);
-        painter->drawEllipse(body[1].x - 39, body[1].y - 39, 78, 78);
+        for (int i = 1; i < 5; i++)
+        {
+            int radius = i * 10 - collectorStage / 4;
+            QPen tempPen;
+            tempPen = QPen(QColor(255, 255, 0, 240 - radius*6));
+            tempPen.setWidth(4);
+            painter->setPen(tempPen);
+            painter->setBrush(Qt::NoBrush);
+            painter->drawEllipse(QPoint(body[1].x, body[1].y), radius, radius);
+        }
+        collectorStage++;
+        collectorStage %= 40;
     }
 
     //Фрукты
-    if (!fruitList.empty())
-    {
-        fruit a;
-        int i = 0;
-        while (i <= fruitList.count() && !fruitList.empty())
-        {
-            if (i < fruitList.count())
-                a = fruitList.takeAt(i);
-            else if (i == fruitList.count())
-                a = fruitList.takeLast();
-            painter->drawImage(a.coords.x() - 10, a.coords.y() - 10, fruitImage[a.type]);
-            fruitList.insert(i, a);
-            i++;
-        }
-    }
+    foreach (fruit *a, fruitList)
+        a->draw(painter);
 
     //Бонусы
     if (!bonusList.empty())
@@ -466,66 +442,14 @@ void Helper::draw(QPainter *painter)
         }
     }
 
-    //Анимации
-    if (!animationList.empty() )
+    QList<animation *> alist = animationList;
+    foreach(animation *a, alist)
     {
-        animation a;
-        int i = 0;
-        while (i < animationList.count() && !animationList.empty())
+        a->draw(painter);
+        if (a->state > 60)
         {
-            //Вытаскиваем анимацию из списка
-            if (i < animationList.count())
-                a = animationList.takeAt(i);
-            else if (i == animationList.count())
-                a = animationList.takeLast();
-            if (running && !screen->dead)
-                a.state += 1;
-
-            //Разбор типов анимаций
-            if (a.type == "SCORE")
-            {
-                //Тут отрисовка надписи
-                painter->setPen(textPen);
-                painter->setBrush(Qt::NoBrush);
-                painter->drawText(a.x + a.state/6 - 10, a.y - a.state/3 - 20, a.value);
-            }
-            else if (a.type == "MESSAGE")
-            {
-                QImage image;
-                if (a.value == "GHOST")
-                    image = ghostImage;
-                else
-                    image = collectorImage;
-                for (int y = 0; y < image.height(); ++y)
-                {
-                  QRgb *row = (QRgb*)image.scanLine(y);
-                  for (int x = 0; x < image.width(); ++x)
-                    if (((unsigned char*)&row[x])[3] != 0)
-                        ((unsigned char*)&row[x])[3] = 180 - a.state*3;
-                }
-                painter->drawImage(QRect(300 - (image.width()*(a.state/2+1))/2,
-                                         300 - (image.height()*(a.state/2+1))/2,
-                                         image.width()*(a.state/2+1),
-                                         image.height()*(a.state/2+1)),
-                                   image);
-            }
-            else if (a.type == "SPAWN")
-            {
-                //Круг яблока
-                int radius = 20 + a.state;
-                spawnPen = QPen(QColor(100, 255, 0, 164 - radius*2));
-                spawnPen.setWidth(1 + radius/10);
-                painter->setPen(spawnPen);
-                painter->setBrush(Qt::NoBrush);
-                painter->drawEllipse(a.x - radius/2, a.y - radius/2, radius, radius);
-            }
-
-            //Кладем анимацию обратно
-            if (a.state < 60)
-            {
-                animationList.insert(i, a);
-                i++;
-            }
+            animationList.removeAll(a);
+            delete a;
         }
     }
 

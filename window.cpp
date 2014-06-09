@@ -4,6 +4,7 @@
 #include "QCursor"
 #include <QDebug>
 #include <QMouseEvent>
+#include <QHBoxLayout>
 
 Window::Window()
     : QWidget()
